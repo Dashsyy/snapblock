@@ -41,6 +41,21 @@ body {
   display: none; /* Safari and Chrome */
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+}
+.scroll-snap-align-center {
+  scroll-snap-align: center;
+}
+
 /* Mobile First Defaults (Smallest screens < 360px) */
 .target-slot {
   width: 50px;
