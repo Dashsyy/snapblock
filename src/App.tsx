@@ -4,29 +4,34 @@ import { Block } from './components/Block';
 import type { BlockType } from './components/Block';
 import { TargetZone } from './components/TargetZone';
 import { ResultsScreen } from './components/ResultsScreen';
-import { SPRING_SNAPPY } from './constants/animations';
-import { Trophy, Timer, Star, Zap } from 'lucide-react';
-
-const LESSONS = [
-  'HELLO', 'CAT', 'DOG', 'APPLE', 'BIRD',
-  'BLUE', 'GREEN', 'HAPPY', 'FISH', 'SMILE'
-];
+import { IntroScreen } from './components/IntroScreen';
+import { ModuleSelector } from './components/ModuleSelector';
+import type { ModuleType } from './components/ModuleSelector';
+import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE } from './data/lessons';
+import { haptic } from './utils/haptics';
+import { Trophy, Timer, Star, Zap, User, ArrowLeft } from 'lucide-react';
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
 function App() {
+  const [userName, setUserName] = useState<string | null>(null);
+  const [selectedModule, setSelectedModule] = useState<ModuleType | null>(null);
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [filledSlots, setFilledSlots] = useState<boolean[]>([]);
+  const [placedChars, setPlacedChars] = useState<(string | null)[]>([]);
   const [score, setScore] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isModuleFinished, setIsModuleFinished] = useState(false);
   const [showLessonSuccess, setShowLessonSuccess] = useState(false);
   
-  const targetWord = LESSONS[currentLessonIdx] || "";
-  const [lessonTimer, setLessonTimer] = useState(LESSONS[0].length * 5);
-  const [initialLessonTimer, setInitialLessonTimer] = useState(LESSONS[0].length * 5);
+  const moduleLessons = selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE;
+  const currentLesson = moduleLessons[currentLessonIdx];
+  const targetWord = currentLesson?.target || "";
+  
+  const [lessonTimer, setLessonTimer] = useState(15);
+  const [initialLessonTimer, setInitialLessonTimer] = useState(15);
   const [isBonusActive, setIsBonusActive] = useState(true);
   const [lastPointsEarned, setLastPointsEarned] = useState(0);
 
@@ -36,11 +41,19 @@ function App() {
   const initializeLesson = useCallback((keepScore = true) => {
     if (!targetWord) return;
     const wordChars = targetWord.split('');
-    const randomChars = Array.from({ length: 15 - wordChars.length }, () => 
-      String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    );
     
-    const allChars = [...wordChars, ...randomChars].sort(() => Math.random() - 0.5);
+    let trayChars: string[] = [];
+    if (selectedModule === 'MATH') {
+      trayChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      trayChars = [...trayChars, ...Array.from({ length: 5 }, () => Math.floor(Math.random() * 10).toString())];
+    } else {
+      const randomChars = Array.from({ length: 15 - wordChars.length }, () => 
+        String.fromCharCode(65 + Math.floor(Math.random() * 26))
+      );
+      trayChars = [...wordChars, ...randomChars];
+    }
+    
+    const allChars = trayChars.sort(() => Math.random() - 0.5);
     
     const newBlocks: BlockType[] = allChars.map((char, i) => ({
       id: `${char}-${i}-${Math.random()}`,
@@ -57,28 +70,31 @@ function App() {
 
     setBlocks(newBlocks);
     setFilledSlots(new Array(targetWord.length).fill(false));
+    setPlacedChars(new Array(targetWord.length).fill(null));
     setShowLessonSuccess(false);
     if (!keepScore) {
       setScore(0);
       setElapsedTime(0);
       setStartTime(Date.now());
     }
-  }, [targetWord]);
+  }, [targetWord, selectedModule]);
 
   useEffect(() => {
-    initializeLesson();
-  }, [initializeLesson]);
+    if (userName && selectedModule) {
+      initializeLesson();
+    }
+  }, [initializeLesson, userName, selectedModule]);
 
   useEffect(() => {
-    if (isModuleFinished) return;
+    if (isModuleFinished || !userName || !selectedModule) return;
     const interval = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
     return () => clearInterval(interval);
-  }, [startTime, isModuleFinished]);
+  }, [startTime, isModuleFinished, userName, selectedModule]);
 
   useEffect(() => {
-    if (isModuleFinished || showLessonSuccess || !targetWord) return;
+    if (isModuleFinished || showLessonSuccess || !targetWord || !userName || !selectedModule) return;
     
     if (lessonTimer <= 0) {
       setIsBonusActive(false);
@@ -89,7 +105,7 @@ function App() {
       setLessonTimer(prev => Math.max(0, prev - 1));
     }, 1000);
     return () => clearInterval(interval);
-  }, [lessonTimer, isModuleFinished, showLessonSuccess, targetWord]);
+  }, [lessonTimer, isModuleFinished, showLessonSuccess, targetWord, userName, selectedModule]);
 
   const onSlotMount = (index: number, element: HTMLDivElement | null) => {
     if (element) {
@@ -115,20 +131,43 @@ function App() {
         y <= slotRect.bottom
       );
 
-      if (isInside && block.char === targetWord[i]) {
-        setFilledSlots(prev => {
-          const newFilled = [...prev];
-          newFilled[i] = true;
-          if (newFilled.every(s => s)) {
-            handleLessonComplete();
-          }
-          return newFilled;
-        });
+      if (isInside) {
+        const isCorrect = block.char === targetWord[i];
+        
+        if (selectedModule === 'MATH' || isCorrect) {
+          if (isCorrect) haptic.success();
+          else if (selectedModule === 'MATH') haptic.error();
 
-        setBlocks(prev => prev.map(b => 
-          b.id === blockId ? { ...b, isPlaced: true } : b
-        ));
-        return;
+          setPlacedChars(prev => {
+            const next = [...prev];
+            next[i] = block.char;
+            return next;
+          });
+
+          setFilledSlots(prev => {
+            const next = [...prev];
+            next[i] = true;
+            return next;
+          });
+
+          setBlocks(prev => prev.map(b => 
+            b.id === blockId ? { ...b, isPlaced: true } : b
+          ));
+
+          setTimeout(() => {
+            setPlacedChars(currentPlaced => {
+              const allCorrect = currentPlaced.every((char, idx) => char === targetWord[idx]);
+              const allFilled = currentPlaced.every(char => char !== null);
+              
+              if (allFilled && allCorrect) {
+                handleLessonComplete();
+              }
+              return currentPlaced;
+            });
+          }, 0);
+
+          return;
+        }
       }
     }
   };
@@ -138,9 +177,10 @@ function App() {
     setScore(prev => prev + points);
     setLastPointsEarned(points);
     setShowLessonSuccess(true);
+    haptic.double();
     
     setTimeout(() => {
-      if (currentLessonIdx < LESSONS.length - 1) {
+      if (currentLessonIdx < moduleLessons.length - 1) {
         setCurrentLessonIdx(prev => prev + 1);
       } else {
         setIsModuleFinished(true);
@@ -151,19 +191,38 @@ function App() {
   const clearLesson = () => {
     if (!targetWord) return;
     setFilledSlots(new Array(targetWord.length).fill(false));
+    setPlacedChars(new Array(targetWord.length).fill(null));
     setBlocks(prev => prev.map(b => ({ ...b, isPlaced: false })));
   };
 
   const resetGame = () => {
     setCurrentLessonIdx(0);
     setIsModuleFinished(false);
+    setStartTime(Date.now());
+    setElapsedTime(0);
     initializeLesson(false);
   };
 
-  // Render separate screen if finished
+  const handleBackToModules = () => {
+    setSelectedModule(null);
+    setCurrentLessonIdx(0);
+    setIsModuleFinished(false);
+    setScore(0);
+    setElapsedTime(0);
+  };
+
+  if (!userName) {
+    return <IntroScreen onStart={(name) => setUserName(name)} />;
+  }
+
+  if (!selectedModule) {
+    return <ModuleSelector userName={userName} onSelect={(mod) => setSelectedModule(mod)} />;
+  }
+
   if (isModuleFinished) {
     return (
       <ResultsScreen 
+        userName={userName}
         score={score} 
         totalTime={elapsedTime} 
         onRestart={resetGame} 
@@ -178,13 +237,25 @@ function App() {
       style={{
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#f3f4f6',
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        <motion.div 
+          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: 'absolute', top: '10%', left: '10%', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)', filter: 'blur(40px)' }}
+        />
+        <motion.div 
+          animate={{ x: [0, -40, 0], y: [0, 60, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          style={{ position: 'absolute', bottom: '20%', right: '10%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
+        />
+      </div>
+
       <header style={{ 
         padding: '0.75rem 1rem', 
         display: 'flex', 
@@ -193,10 +264,25 @@ function App() {
         backgroundColor: '#ffffff', 
         borderBottom: '2px solid #d1d5db',
         flexWrap: 'wrap',
-        gap: '0.5rem'
+        gap: '0.5rem',
+        position: 'relative',
+        zIndex: 10
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#1f2937' }}>WordSnap</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <button 
+            onClick={handleBackToModules}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center' }}
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#1f2937' }}>WordSnap</h1>
+          </div>
+          <div style={{ height: '24px', width: '2px', backgroundColor: '#e5e7eb' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4b5563', fontWeight: 'bold' }}>
+            <User size={18} />
+            <span style={{ fontSize: '0.9rem' }}>{userName}</span>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#6b7280' }}>
             <Star size={16} fill="#f59e0b" color="#f59e0b" />
             <span style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{currentLessonIdx + 1}/10</span>
@@ -215,7 +301,7 @@ function App() {
         </div>
       </header>
 
-      <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', position: 'relative' }}>
+      <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', position: 'relative', zIndex: 10 }}>
         <motion.div 
           initial={{ width: '100%' }}
           animate={{ 
@@ -227,6 +313,42 @@ function App() {
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '1rem' }}>
+        
+        <AnimatePresence mode="wait">
+          {currentLesson && (
+            <motion.div
+              key={currentLesson.id}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+            >
+              {currentLesson.icon && (
+                <div style={{ padding: '2rem', backgroundColor: 'white', borderRadius: '3rem', boxShadow: '0 10px 20px rgba(0,0,0,0.05)', marginBottom: '1.5rem', color: '#3b82f6' }}>
+                  {currentLesson.icon}
+                </div>
+              )}
+              {currentLesson.displayHint && (
+                <div style={{ 
+                  fontSize: 'min(5rem, 12vw)', 
+                  fontWeight: 900, 
+                  color: '#1f2937', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem',
+                  backgroundColor: 'white',
+                  padding: '1.5rem 3rem',
+                  borderRadius: '2rem',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                  border: '4px solid #f1f5f9'
+                }}>
+                  {currentLesson.displayHint}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -243,25 +365,36 @@ function App() {
 
           <TargetZone
             targetWord={targetWord}
+            placedChars={placedChars}
             filledSlots={filledSlots}
             onSlotMount={onSlotMount}
+            isMathMode={selectedModule === 'MATH'}
           />
-          <button 
-            onClick={clearLesson}
-            style={{
-              padding: '0.5rem 1.5rem',
-              borderRadius: '0.75rem',
-              border: '2px solid #d1d5db',
-              backgroundColor: 'white',
-              color: '#4b5563',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '0.9rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-            }}
-          >
-            Clear
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', minHeight: '60px' }}>
+            <AnimatePresence>
+              {filledSlots.some(s => s) && (
+                <motion.button 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  onClick={clearLesson}
+                  style={{
+                    padding: '0.5rem 1.5rem',
+                    borderRadius: '0.75rem',
+                    border: '2px solid #d1d5db',
+                    backgroundColor: 'white',
+                    color: '#4b5563',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                  }}
+                >
+                  Clear
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
         
         <AnimatePresence>
@@ -291,7 +424,6 @@ function App() {
                 <Trophy size={20} color={lastPointsEarned === 2 ? '#3b82f6' : '#10b981'} />
                 <span style={{ fontWeight: '900', fontSize: '1.5rem', color: '#1f2937' }}>+{lastPointsEarned}</span>
               </div>
-              <p style={{ fontWeight: 'bold', color: '#4b5563', fontSize: '0.9rem', marginTop: '0.5rem' }}>Next word loading...</p>
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,7 +1,8 @@
 import { motion, useAnimationControls } from 'framer-motion';
-import type { Variants, TargetAndTransition } from 'framer-motion';
-import { SPRING_SNAPPY, SPRING_BOUNCY, SPRING_HEAVY } from '../constants/animations';
+import type { Variants } from 'framer-motion';
+import { SPRING_SNAPPY, SPRING_HEAVY } from '../constants/animations';
 import { useEffect } from 'react';
+import { haptic } from '../utils/haptics';
 
 export interface BlockType {
   id: string;
@@ -75,7 +76,12 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
       dragConstraints={containerRef}
       dragElastic={0.1}
       dragMomentum={false}
-      onDragStart={() => !disabled && controls.set("dragging")}
+      onDragStart={() => {
+        if (!disabled) {
+          controls.set("dragging");
+          haptic.light();
+        }
+      }}
       onDragEnd={handleDragEnd}
       variants={variants}
       whileDrag={{ zIndex: 1000 }} /* Ensure block is on top of everything during drag */
