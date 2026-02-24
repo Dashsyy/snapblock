@@ -39,9 +39,9 @@ const Slot: React.FC<SlotProps> = ({ correctChar, placedChar, isFilled, onMount,
       
       {isFilled && (
         <motion.div
-          initial={{ scale: 0, rotate: isWrong ? 10 : -15 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={SPRING_SNAPPY}
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ ...SPRING_SNAPPY, duration: 0.2 }}
           className="filled-block"
           style={{
             borderRadius: 10,
@@ -93,12 +93,13 @@ export const TargetZone: React.FC<TargetZoneProps> = ({ targetWord, placedChars,
         gap: '0.5rem',
         justifyContent: 'center',
         padding: '1.5rem',
-        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // More opaque instead of blur
         borderRadius: '1.5rem',
-        backdropFilter: 'blur(10px)',
         boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
         maxWidth: '95vw',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        position: 'relative',
+        zIndex: 1 // Explicit low zIndex
       }}
     >
       {targetWord.split('').map((char, i) => (

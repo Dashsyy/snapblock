@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Trophy, RotateCcw, Clock, Star } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface ResultsScreenProps {
   userName: string;
@@ -10,22 +12,22 @@ interface ResultsScreenProps {
 }
 
 export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, totalTime, onRestart }) => {
+  const { t } = useTranslation();
   const minutes = Math.floor(totalTime / 60);
   const seconds = totalTime % 60;
 
   // Calculate Performance
-  // Max score is 20 (10 lessons * 2 points each)
   const percentage = (score / 20) * 100;
   
-  let grade = { label: 'KEEP TRYING!', color: '#94a3b8', desc: 'Practice makes perfect!' };
+  let grade = { label: t('keepTrying'), color: '#94a3b8', desc: t('moduleDesc.WORD') };
   if (percentage === 100) {
-    grade = { label: 'PERFECT 100%', color: '#3b82f6', desc: 'You are a WordSnap Master!' };
+    grade = { label: t('perfect'), color: '#3b82f6', desc: t('introSub') };
   } else if (percentage >= 80) {
-    grade = { label: 'EXCELLENT!', color: '#10b981', desc: 'So close to perfection!' };
+    grade = { label: t('excellent'), color: '#10b981', desc: t('introSub') };
   } else if (percentage >= 50) {
-    grade = { label: 'GOOD JOB!', color: '#f59e0b', desc: 'Great effort today!' };
+    grade = { label: t('goodJob'), color: '#f59e0b', desc: t('introSub') };
   } else {
-    grade = { label: 'NEED IMPROVEMENT', color: '#ef4444', desc: 'Let\'s try again to get faster!' };
+    grade = { label: t('needImprovement'), color: '#ef4444', desc: t('introSub') };
   }
 
   return (
@@ -47,6 +49,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
         overflow: 'hidden'
       }}
     >
+      <div style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 100 }}>
+        <LanguageSwitcher />
+      </div>
+
       {/* Decorative Background Blobs */}
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
         <motion.div 
@@ -67,7 +73,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
         transition={SPRING_BOUNCY}
         style={{
           backgroundColor: 'white',
-          padding: '3rem',
+          padding: 'clamp(1.5rem, 5vh, 3rem)',
           borderRadius: '3rem',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
           maxWidth: '500px',
@@ -82,7 +88,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
             animate={{ rotate: [0, -10, 10, -10, 0] }}
             transition={{ repeat: Infinity, duration: 4 }}
           >
-            <Trophy size={80} color={grade.color} style={{ margin: '0 auto' }} />
+            <Trophy size={clampSize(60, 80)} color={grade.color} style={{ margin: '0 auto' }} />
           </motion.div>
           
           <motion.div
@@ -95,7 +101,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
               padding: '0.5rem 1.5rem',
               borderRadius: '2rem',
               fontWeight: '900',
-              fontSize: '1rem',
+              fontSize: '0.8rem',
               display: 'inline-block',
               marginTop: '1rem',
               boxShadow: `0 4px 0 ${grade.color}80`
@@ -105,28 +111,28 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
           </motion.div>
         </div>
 
-        <h1 style={{ fontSize: '2.3rem', fontWeight: 900, color: '#1f2937', marginBottom: '0.25rem', lineHeight: 1.1 }}>
-          Way to go, {userName}!
+        <h1 style={{ fontSize: 'clamp(1.5rem, 6vw, 2.3rem)', fontWeight: 900, color: '#1f2937', marginBottom: '0.25rem', lineHeight: 1.1 }}>
+          {t('hello', { name: userName })}
         </h1>
-        <p style={{ color: '#6b7280', marginBottom: '2rem', fontSize: '1.1rem', fontWeight: '500' }}>
+        <p style={{ color: '#6b7280', marginBottom: '1.5rem', fontSize: '1rem', fontWeight: '500' }}>
           {grade.desc}
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
-          <div style={{ backgroundColor: '#f8fafc', padding: '1.2rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', marginBottom: '0.25rem' }}>
-              <Star size={18} fill="#64748b" />
-              <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>SCORE</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#64748b', marginBottom: '0.25rem' }}>
+              <Star size={16} fill="#64748b" />
+              <span style={{ fontWeight: 'bold', fontSize: '0.7rem' }}>{t('score')}</span>
             </div>
-            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1e293b' }}>{score}</div>
+            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1e293b' }}>{score}</div>
           </div>
 
-          <div style={{ backgroundColor: '#f8fafc', padding: '1.2rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b', marginBottom: '0.25rem' }}>
-              <Clock size={18} />
-              <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>TIME</span>
+          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#64748b', marginBottom: '0.25rem' }}>
+              <Clock size={16} />
+              <span style={{ fontWeight: 'bold', fontSize: '0.7rem' }}>{t('time')}</span>
             </div>
-            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1e293b' }}>
+            <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1e293b' }}>
               {minutes}:{seconds.toString().padStart(2, '0')}
             </div>
           </div>
@@ -136,12 +142,12 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
           onClick={onRestart}
           style={{
             width: '100%',
-            padding: '1.2rem',
+            padding: '1rem',
             borderRadius: '1.5rem',
             border: 'none',
             backgroundColor: '#1f2937',
             color: 'white',
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
             fontWeight: 'bold',
             cursor: 'pointer',
             display: 'flex',
@@ -155,9 +161,14 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
           onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           <RotateCcw size={24} />
-          RETRY MODULE
+          {t('retryModule')}
         </button>
       </motion.div>
     </motion.div>
   );
 };
+
+function clampSize(min: number, max: number) {
+  if (typeof window === 'undefined') return max;
+  return window.innerWidth < 360 ? min : max;
+}

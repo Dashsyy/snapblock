@@ -41,6 +41,12 @@ body {
   display: none; /* Safari and Chrome */
 }
 
+/* Prevent clipping when a block is being dragged out of the tray */
+.app-container.is-dragging .tray-container,
+.app-container.is-dragging .tray-grid {
+  overflow: visible !important;
+}
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

@@ -1,6 +1,6 @@
-import { motion, useAnimationControls } from 'framer-motion';
+import { motion, useAnimationControls, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { SPRING_SNAPPY, SPRING_HEAVY } from '../constants/animations';
+import { SPRING_SNAPPY } from '../constants/animations';
 import { useEffect } from 'react';
 import { haptic } from '../utils/haptics';
 
@@ -14,13 +14,20 @@ export interface BlockType {
 
 interface BlockProps {
   block: BlockType;
-  onDrop: (blockId: string, x: number, y: number) => void;
+  onDrop: (blockId: string, x: number, y: number) => boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   disabled?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
-export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disabled }) => {
+export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disabled, onDragStart, onDragEnd }) => {
   const controls = useAnimationControls();
+  
+  // Motion values for dynamic tilt
+  const x = useMotionValue(0);
+  const rotateValue = useTransform(x, [-100, 100], [-15, 15]);
+  const smoothRotate = useSpring(rotateValue, { stiffness: 300, damping: 30 });
 
   useEffect(() => {
     if (!disabled) {
@@ -28,12 +35,27 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
     }
   }, [controls, disabled, block.isPlaced]);
 
+  const handleDragStart = () => {
+    if (disabled) return;
+    controls.set("dragging");
+    haptic.light();
+    onDragStart?.();
+  };
+
   const handleDragEnd = (_event: any, info: any) => {
     if (disabled || block.isPlaced) return;
-    onDrop(block.id, info.point.x, info.point.y);
+    const isPlaced = onDrop(block.id, info.point.x, info.point.y);
+    onDragEnd?.();
     
-    // Always return to "idle" (which is its home in the tray grid)
-    controls.start("idle");
+    // Reset motion value
+    x.set(0);
+    
+    // ONLY return to "idle" if it was NOT placed.
+    // If it was placed, we want it to stay exactly where the user dropped it
+    // while the AnimatePresence exit animation handles its disappearance.
+    if (!isPlaced) {
+      controls.start("idle");
+    }
   };
 
   const variants: Variants = {
@@ -52,40 +74,28 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
       transition: SPRING_SNAPPY
     },
     dragging: {
-      scale: 1.1,
-      rotate: 5,
-      zIndex: 999,
-      transition: SPRING_HEAVY
+      scale: 1.15,
+      zIndex: 9999,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 2
+      }
     },
     disabled: {
       scale: 1,
       rotate: 0,
       boxShadow: "none",
       opacity: 0.8,
-      cursor: 'default'
+      cursor: 'default',
+      zIndex: 1
     }
   };
 
   return (
     <motion.div
       layout
-      animate={disabled ? "disabled" : controls}
-      whileHover={disabled ? {} : "hover"}
-      whileTap={disabled ? {} : "hover"}
-      drag={!disabled}
-      dragConstraints={containerRef}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragStart={() => {
-        if (!disabled) {
-          controls.set("dragging");
-          haptic.light();
-        }
-      }}
-      onDragEnd={handleDragEnd}
-      variants={variants}
-      whileDrag={{ zIndex: 1000 }} /* Ensure block is on top of everything during drag */
-      className="letter-block"
       style={{
         backgroundColor: block.color,
         borderRadius: 12,
@@ -99,7 +109,28 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
         position: 'relative',
         willChange: "transform",
         border: '3px solid rgba(255,255,255,0.3)',
+        rotate: disabled ? 0 : smoothRotate, // Dynamic tilt
+        x // Bind to motion value
       }}
+      animate={disabled ? "disabled" : controls}
+      whileHover={disabled ? {} : "hover"}
+      whileTap={disabled ? {} : "hover"}
+      drag={!disabled}
+      dragConstraints={containerRef}
+      dragElastic={0.05}
+      dragMomentum={true}
+      dragTransition={{
+        power: 0.2, // Increased power for better inertia feel
+        timeConstant: 200
+      }}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      variants={variants}
+      whileDrag={{ 
+        zIndex: 10000,
+        cursor: 'grabbing'
+      }} 
+      className="letter-block"
     >
       <span style={{ zIndex: 2 }}>{block.char}</span>
       <div

@@ -1,0 +1,41 @@
+{
+  "welcome": "Welcome Back",
+  "hello": "Hello, {{name}}!",
+  "introTitle": "WordSnap Academy",
+  "introSub": "Ready to master your skills?",
+  "selectModule": "Which academy would you like to join today?",
+  "startLearning": "START LEARNING",
+  "whatsYourName": "WHAT'S YOUR NAME?",
+  "enterName": "Enter your name...",
+  "play": "Play",
+  "clear": "Clear",
+  "bonusActive": "BONUS ACTIVE (x2 POINTS!)",
+  "timesUp": "TIME'S UP! (NORMAL SCORE)",
+  "lessonProgress": "{{current}}/{{total}}",
+  "superFast": "SUPER FAST!",
+  "awesome": "AWESOME!",
+  "retryModule": "RETRY MODULE",
+  "score": "SCORE",
+  "time": "TIME",
+  "keepTrying": "KEEP TRYING!",
+  "perfect": "PERFECT 100%",
+  "excellent": "EXCELLENT!",
+  "goodJob": "GOOD JOB!",
+  "needImprovement": "NEED IMPROVEMENT",
+  "modules": {
+    "WORD": "Spelling",
+    "MATH": "Math Fun",
+    "VISUAL": "See & Spell"
+  },
+  "moduleDesc": {
+    "WORD": "Master new words with fun blocks!",
+    "MATH": "Count, add, and play with numbers!",
+    "VISUAL": "Look at the picture and spell!"
+  },
+  "heroMessages": [
+    "Ready to become a spelling hero?",
+    "Ready to master your math skills?",
+    "Ready for some visual puzzles?",
+    "Ready to snap those blocks?"
+  ]
+}

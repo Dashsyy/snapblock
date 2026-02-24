@@ -4,59 +4,68 @@ WordSnap Academy is a physical, interactive educational platform built with Reac
 
 ## 🚀 Tech Stack
 - **Framework:** React 19 (TypeScript)
-- **Animation:** Framer Motion (Spring Physics)
-- **Icons:** Lucide React
+- **Animation:** Framer Motion (Spring Physics + Motion Values)
+- **I18n:** i18next (English & Khmer support)
+- **Monitoring:** Vercel Analytics & Speed Insights
 - **Build Tool:** Vite
-- **Styling:** Vanilla CSS + Inline Styles for dynamic physics
+- **Styling:** Vanilla CSS + Dynamic Viewport Units (dvh)
 
 ## ✨ Key Features
-- **Physical Block Engine:** High-performance drag-and-drop with spring physics (Snappy, Bouncy, and Heavy configurations).
+- **Physical Block Engine:** Weighted drag-and-drop with **dynamic inertia** and **horizontal tilt**.
+- **Multi-Language Support:** Instant switching between English (EN) and Khmer (KM).
+- **Refactored Architecture:** Clean separation of concerns using custom hooks and modular UI components.
+- **Mobile Production Ready:** 
+  - Dynamic Viewport Height (`100dvh`) for mobile browsers.
+  - Safe-area inset support for modern smartphones (iPhone 14+).
+  - Scrollable tray with intelligent overflow management during drag.
 - **Multi-Module Curriculum:**
   - **Spelling Word:** Traditional letter-to-word matching.
-  - **Math Fun:** Solving equations with number blocks and instant visual feedback (Red X / Green Check).
-  - **Visual Hint:** Icon-based prompts for word construction.
-- **Dynamic Feedback:**
-  - **Speed Bonus:** 5s/character countdown for x2 points.
-  - **Haptic Feedback:** Tactile pulses for pickup, success, and error (on supported devices).
-  - **Progressive Grading:** Performance-based results (Perfect, Excellent, Good, Improvement).
-- **Responsive Design:** Fully optimized for Mobile, iPad, and Desktop with fluid grid systems.
-- **Personalization:** User-name entry and personalized achievement screens.
+  - **Math Fun:** Equation solving with instant feedback.
+  - **Visual Hint:** Icon-based word puzzles.
+- **Soulful UX:**
+  - Rotating hero messages on the entry screen.
+  - Intensified "Bonus Active" environment with pulsing gradients and shimmer effects.
+  - Horizontal module selection with scroll-snapping.
 
 ## 📂 Project Structure
 ```text
 src/
 ├── components/
-│   ├── Block.tsx           # Individual draggable block with spring variants
-│   ├── TargetZone.tsx      # Word/Equation slots with placement logic
-│   ├── IntroScreen.tsx     # Welcome & Name entry
-│   ├── ModuleSelector.tsx  # Curriculum selection
-│   └── ResultsScreen.tsx   # Final score & performance grading
+│   ├── Block.tsx           # Weighted draggable block with dynamic tilt
+│   ├── Tray.tsx            # Scrollable block container with overflow logic
+│   ├── TargetZone.tsx      # Target slots with snap placement logic
+│   ├── GameHeader.tsx      # Dynamic module-aware status bar
+│   ├── GameBackground.tsx  # Reactive environment (Bonus/Normal states)
+│   ├── LessonDisplay.tsx   # Localized hints and icons
+│   ├── IntroScreen.tsx     # Animated welcome screen with i18n
+│   ├── ModuleSelector.tsx  # Soulful horizontal curriculum selection
+│   ├── LanguageSwitcher.tsx # Animated language toggle (EN/KM)
+│   └── ResultsScreen.tsx   # Performance grading & summary
+├── hooks/
+│   └── useGameLogic.ts     # Core state machine, timers, and drag logic
+├── locales/                # JSON translation files (EN/KM)
 ├── constants/
-│   └── animations.ts       # Global Framer Motion spring specs
+│   └── animations.ts       # Global spring physics definitions
 ├── data/
-│   └── lessons.tsx         # Centralized module content (Spelling, Math, Visual)
-├── utils/
-│   └── haptics.ts          # Browser Vibration API wrapper
-├── App.tsx                 # Core game loop & state management
-└── index.css               # Global styles & responsive breakpoints
+│   └── lessons.tsx         # Centralized multi-subject curriculum
+├── App.tsx                 # Root layout & component orchestrator
+└── main.tsx                # App entry with Analytics & I18n initialization
 ```
 
 ## 🛠 Interaction Spec (Framer Motion)
-| State | Trigger | Animation | Physics |
-|-------|---------|-----------|---------|
-| **Idle** | Default | scale: 1 | Snappy Spring |
+| State | Trigger | Animation | Physics / Logic |
+|-------|---------|-----------|-----------------|
+| **Idle** | Default | scale: 1, rotate: 0 | Snappy Spring |
 | **Hover** | whileHover | scale: 1.1 | Snappy Spring |
-| **Drag** | whileDrag | scale: 1.1, rotate: 5 | Heavy Spring |
-| **Snap** | onDragEnd | scale: [1.1, 1.2, 1] | Bouncy Spring |
-| **Entry** | Mount | staggerChildren: 0.05 | Snappy Spring |
+| **Drag** | whileDrag | **Dynamic Tilt (Inertia)** | Mass: 2, Elastic: 0.05 |
+| **Snap** | onDrop | scale: [1.1, 1.2, 1] | Fade-in Transition |
+| **Bonus** | isBonusActive | Pulsing Gradients | 4s Heartbeat Loop |
 
-## 📝 How to Run
-1. Install dependencies: `npm install`
-2. Start development server: `npm run dev`
-3. Build for production: `npm run build`
+## 📝 Recent Refinement
+The application has been refactored to decouple logic from layout. `useGameLogic` now handles the "Brain" of the game, while `App.tsx` focuses on the "Body" (layout and layering). Stacking contexts (z-index) have been rigorously tuned for Mobile Safari.
 
-## 🔮 Future Roadmap
-- [ ] Support for sentence construction.
-- [ ] Sound effect integration (SFX).
-- [ ] Persistence using LocalStorage for student profiles.
-- [ ] Custom lesson builder for teachers.
+## 🔮 Future Roadmap (See ROADMAP.md)
+- [ ] Confetti celebration on lesson completion.
+- [ ] Native Web Speech API for EN/KM pronunciation.
+- [ ] Difficulty levels (Easy/Hard progression).
+- [ ] Themed environments (Space, Jungle, Ocean).

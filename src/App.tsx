@@ -1,111 +1,53 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Block } from './components/Block';
-import type { BlockType } from './components/Block';
 import { TargetZone } from './components/TargetZone';
 import { ResultsScreen } from './components/ResultsScreen';
 import { IntroScreen } from './components/IntroScreen';
 import { ModuleSelector } from './components/ModuleSelector';
 import type { ModuleType } from './components/ModuleSelector';
-import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE } from './data/lessons';
-import { haptic } from './utils/haptics';
-import { Trophy, Timer, Star, Zap, User, ArrowLeft } from 'lucide-react';
+import { Zap, Trophy } from 'lucide-react';
+import { useGameLogic } from './hooks/useGameLogic';
+import { useTranslation } from 'react-i18next';
 
-const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+// Sub-components
+import { GameHeader } from './components/GameHeader';
+import { GameBackground } from './components/GameBackground';
+import { LessonDisplay } from './components/LessonDisplay';
+import { Tray } from './components/Tray';
 
 function App() {
   const [userName, setUserName] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<ModuleType | null>(null);
-  const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
-  const [blocks, setBlocks] = useState<BlockType[]>([]);
-  const [filledSlots, setFilledSlots] = useState<boolean[]>([]);
-  const [placedChars, setPlacedChars] = useState<(string | null)[]>([]);
-  const [score, setScore] = useState(0);
-  const [startTime, setStartTime] = useState<number>(Date.now());
-  const [elapsedTime, setElapsedTime] = useState(0);
-  const [isModuleFinished, setIsModuleFinished] = useState(false);
-  const [showLessonSuccess, setShowLessonSuccess] = useState(false);
-
-  const moduleLessons = selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE;
-  const currentLesson = moduleLessons[currentLessonIdx];
-  const targetWord = currentLesson?.target || "";
-
-  const [lessonTimer, setLessonTimer] = useState(15);
-  const [initialLessonTimer, setInitialLessonTimer] = useState(15);
-  const [isBonusActive, setIsBonusActive] = useState(true);
-  const [lastPointsEarned, setLastPointsEarned] = useState(0);
+  const { t } = useTranslation();
+  
+  const {
+    currentLessonIdx,
+    blocks,
+    filledSlots,
+    placedChars,
+    score,
+    elapsedTime,
+    isModuleFinished,
+    showLessonSuccess,
+    lessonTimer,
+    initialLessonTimer,
+    isBonusActive,
+    lastPointsEarned,
+    currentLesson,
+    targetWord,
+    slotRefs,
+    handleDrop,
+    clearLesson,
+    resetGame,
+    setScore,
+    setElapsedTime,
+    setIsModuleFinished,
+    setCurrentLessonIdx,
+    isDragging,
+    setIsDragging
+  } = useGameLogic(userName, selectedModule);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const slotRefs = useRef<{ [key: number]: DOMRect }>({});
-
-  const initializeLesson = useCallback((keepScore = true) => {
-    if (!targetWord) return;
-    const wordChars = targetWord.split('');
-
-    let trayChars: string[] = [];
-    if (selectedModule === 'MATH') {
-      trayChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-      trayChars = [...trayChars, ...Array.from({ length: 5 }, () => Math.floor(Math.random() * 10).toString())];
-    } else {
-      const randomChars = Array.from({ length: 15 - wordChars.length }, () =>
-        String.fromCharCode(65 + Math.floor(Math.random() * 26))
-      );
-      trayChars = [...wordChars, ...randomChars];
-    }
-
-    const allChars = trayChars.sort(() => Math.random() - 0.5);
-
-    const newBlocks: BlockType[] = allChars.map((char, i) => ({
-      id: `${char}-${i}-${Math.random()}`,
-      char,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      trayIndex: i,
-      isPlaced: false,
-    }));
-
-    const duration = Math.max(10, targetWord.length * 5);
-    setLessonTimer(duration);
-    setInitialLessonTimer(duration);
-    setIsBonusActive(true);
-
-    setBlocks(newBlocks);
-    setFilledSlots(new Array(targetWord.length).fill(false));
-    setPlacedChars(new Array(targetWord.length).fill(null));
-    setShowLessonSuccess(false);
-    if (!keepScore) {
-      setScore(0);
-      setElapsedTime(0);
-      setStartTime(Date.now());
-    }
-  }, [targetWord, selectedModule]);
-
-  useEffect(() => {
-    if (userName && selectedModule) {
-      initializeLesson();
-    }
-  }, [initializeLesson, userName, selectedModule]);
-
-  useEffect(() => {
-    if (isModuleFinished || !userName || !selectedModule) return;
-    const interval = setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [startTime, isModuleFinished, userName, selectedModule]);
-
-  useEffect(() => {
-    if (isModuleFinished || showLessonSuccess || !targetWord || !userName || !selectedModule) return;
-
-    if (lessonTimer <= 0) {
-      setIsBonusActive(false);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setLessonTimer(prev => Math.max(0, prev - 1));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [lessonTimer, isModuleFinished, showLessonSuccess, targetWord, userName, selectedModule]);
 
   const updateSlotRects = useCallback(() => {
     Object.keys(slotRefs.current).forEach(key => {
@@ -115,11 +57,10 @@ function App() {
         slotRefs.current[idx] = el.getBoundingClientRect();
       }
     });
-  }, []);
+  }, [slotRefs]);
 
   useEffect(() => {
     window.addEventListener('resize', updateSlotRects);
-    // Also update on scroll (though we disabled it on body, the tray might scroll)
     window.addEventListener('scroll', updateSlotRects, true);
     return () => {
       window.removeEventListener('resize', updateSlotRects);
@@ -133,94 +74,9 @@ function App() {
     }
   };
 
-  const handleDrop = (blockId: string, x: number, y: number) => {
-    if (!targetWord) return;
-    const block = blocks.find(b => b.id === blockId);
-    if (!block) return;
-
-    for (let i = 0; i < targetWord.length; i++) {
-      if (filledSlots[i]) continue;
-
-      const slotRect = slotRefs.current[i];
-      if (!slotRect) continue;
-
-      const isInside = (
-        x >= slotRect.left &&
-        x <= slotRect.right &&
-        y >= slotRect.top &&
-        y <= slotRect.bottom
-      );
-
-      if (isInside) {
-        const isCorrect = block.char === targetWord[i];
-
-        if (selectedModule === 'MATH' || isCorrect) {
-          if (isCorrect) haptic.success();
-          else if (selectedModule === 'MATH') haptic.error();
-
-          setPlacedChars(prev => {
-            const next = [...prev];
-            next[i] = block.char;
-            return next;
-          });
-
-          setFilledSlots(prev => {
-            const next = [...prev];
-            next[i] = true;
-            return next;
-          });
-
-          setBlocks(prev => prev.map(b =>
-            b.id === blockId ? { ...b, isPlaced: true } : b
-          ));
-
-          setTimeout(() => {
-            setPlacedChars(currentPlaced => {
-              const allCorrect = currentPlaced.every((char, idx) => char === targetWord[idx]);
-              const allFilled = currentPlaced.every(char => char !== null);
-
-              if (allFilled && allCorrect) {
-                handleLessonComplete();
-              }
-              return currentPlaced;
-            });
-          }, 0);
-
-          return;
-        }
-      }
-    }
-  };
-
-  const handleLessonComplete = () => {
-    const points = isBonusActive ? 2 : 1;
-    setScore(prev => prev + points);
-    setLastPointsEarned(points);
-    setShowLessonSuccess(true);
-    haptic.double();
-
-    setTimeout(() => {
-      if (currentLessonIdx < moduleLessons.length - 1) {
-        setCurrentLessonIdx(prev => prev + 1);
-      } else {
-        setIsModuleFinished(true);
-      }
-    }, 1500);
-  };
-
-  const clearLesson = () => {
-    if (!targetWord) return;
-    setFilledSlots(new Array(targetWord.length).fill(false));
-    setPlacedChars(new Array(targetWord.length).fill(null));
-    setBlocks(prev => prev.map(b => ({ ...b, isPlaced: false })));
-  };
-
-  const resetGame = () => {
-    setCurrentLessonIdx(0);
-    setIsModuleFinished(false);
-    setStartTime(Date.now());
-    setElapsedTime(0);
-    initializeLesson(false);
+  const getModuleTitle = () => {
+    if (!selectedModule) return '';
+    return t(`modules.${selectedModule}`);
   };
 
   const handleBackToModules = () => {
@@ -241,18 +97,18 @@ function App() {
 
   if (isModuleFinished) {
     return (
-      <ResultsScreen
+      <ResultsScreen 
         userName={userName}
-        score={score}
-        totalTime={elapsedTime}
-        onRestart={resetGame}
+        score={score} 
+        totalTime={elapsedTime} 
+        onRestart={resetGame} 
       />
     );
   }
 
   return (
-    <div
-      className="app-container"
+    <div 
+      className={`app-container ${isDragging ? 'is-dragging' : ''}`} 
       ref={containerRef}
       style={{
         width: '100%',
@@ -264,70 +120,21 @@ function App() {
         flexDirection: 'column',
       }}
     >
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-        <motion.div
-          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', top: '10%', left: '10%', width: 'min(300px, 80vw)', height: 'min(300px, 80vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)', filter: 'blur(40px)' }}
-        />
-        <motion.div
-          animate={{ x: [0, -40, 0], y: [0, 60, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', bottom: '20%', right: '10%', width: 'min(400px, 90vw)', height: 'min(400px, 90vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
-        />
-      </div>
+      <GameBackground isBonusActive={isBonusActive} />
 
-      <header style={{
-        padding: '0.5rem 0.75rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#ffffff',
-        borderBottom: '2px solid #d1d5db',
-        flexWrap: 'nowrap',
-        overflowX: 'auto',
-        gap: '0.75rem',
-        position: 'relative',
-        zIndex: 10,
-        minHeight: '50px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-          <button
-            onClick={handleBackToModules}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center', padding: '4px' }}
-          >
-            <ArrowLeft size={18} />
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: '#1f2937', whiteSpace: 'nowrap' }}>WordSnap</h1>
-          </div>
-          <div style={{ height: '20px', width: '1px', backgroundColor: '#e5e7eb' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#4b5563', fontWeight: 'bold' }}>
-            <User size={16} />
-            <span style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#6b7280' }}>
-            <Star size={14} fill="#f59e0b" color="#f59e0b" />
-            <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{currentLessonIdx + 1}/10</span>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
-            <Timer size={16} color="#3b82f6" />
-            <span>{Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
-            <Trophy size={16} color="#f59e0b" />
-            <span>{score}</span>
-          </div>
-        </div>
-      </header>
+      <GameHeader 
+        userName={userName}
+        moduleTitle={getModuleTitle()}
+        currentLessonIdx={currentLessonIdx}
+        elapsedTime={elapsedTime}
+        score={score}
+        onBack={handleBackToModules}
+      />
 
       <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', position: 'relative', zIndex: 10 }}>
-        <motion.div
+        <motion.div 
           initial={{ width: '100%' }}
-          animate={{
+          animate={{ 
             width: `${(lessonTimer / initialLessonTimer) * 100}%`,
             backgroundColor: isBonusActive ? '#3b82f6' : '#9ca3af'
           }}
@@ -336,62 +143,25 @@ function App() {
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '1rem' }}>
-
-        <AnimatePresence mode="wait">
-                    {currentLesson && (
-                      <motion.div
-                        key={currentLesson.id}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        style={{ marginBottom: 'min(1.5rem, 3vh)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                      >
-                        {currentLesson.icon && (
-                          <div style={{ 
-                            padding: 'min(2rem, 4vh)', 
-                            backgroundColor: 'white', 
-                            borderRadius: '3rem', 
-                            boxShadow: '0 10px 20px rgba(0,0,0,0.05)', 
-                            marginBottom: 'min(1.5rem, 3vh)', 
-                            color: '#3b82f6' 
-                          }}>
-                            {currentLesson.icon}
-                          </div>
-                        )}
-                        {currentLesson.displayHint && (
-                          <div style={{ 
-                            fontSize: 'min(5rem, 10vh, 12vw)', 
-                            fontWeight: 900, 
-                            color: '#1f2937', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '0.5rem',
-                            backgroundColor: 'white',
-                            padding: 'min(1.5rem, 3vh) min(3rem, 6vw)',
-                            borderRadius: '2rem',
-                            boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
-                            border: '4px solid #f1f5f9'
-                          }}>
-                            {currentLesson.displayHint}
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-          
-        </AnimatePresence>
+        
+        <LessonDisplay currentLesson={currentLesson} />
 
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
-
+          
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            {isBonusActive ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                <Zap size={18} fill="#3b82f6" />
-                <span>BONUS ACTIVE (x2 POINTS!)</span>
-                <span style={{ backgroundColor: '#dbeafe', padding: '2px 8px', borderRadius: '10px' }}>{lessonTimer}s</span>
-              </div>
-            ) : (
-              <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.9rem' }}>TIME'S UP! (NORMAL SCORE)</span>
-            )}
+             {isBonusActive ? (
+               <motion.div 
+                 animate={{ scale: [1, 1.05, 1], filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'] }}
+                 transition={{ duration: 2, repeat: Infinity }}
+                 style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3b82f6', fontWeight: 900, fontSize: '0.9rem' }}
+               >
+                 <Zap size={18} fill="#3b82f6" />
+                 <span>{t('bonusActive')}</span>
+                 <span style={{ backgroundColor: '#3b82f6', color: 'white', padding: '2px 8px', borderRadius: '10px', boxShadow: '0 0 10px rgba(59, 130, 246, 0.5)' }}>{lessonTimer}s</span>
+               </motion.div>
+             ) : (
+               <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.9rem' }}>{t('timesUp')}</span>
+             )}
           </div>
 
           <TargetZone
@@ -404,7 +174,7 @@ function App() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', minHeight: '60px' }}>
             <AnimatePresence>
               {filledSlots.some(s => s) && (
-                <motion.button
+                <motion.button 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -421,13 +191,13 @@ function App() {
                     boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                   }}
                 >
-                  Clear
+                  {t('clear')}
                 </motion.button>
               )}
             </AnimatePresence>
           </div>
         </div>
-
+        
         <AnimatePresence>
           {showLessonSuccess && (
             <motion.div
@@ -449,7 +219,7 @@ function App() {
               }}
             >
               <h2 style={{ fontSize: '2rem', color: lastPointsEarned === 2 ? '#3b82f6' : '#10b981', margin: 0 }}>
-                {lastPointsEarned === 2 ? 'SUPER FAST!' : 'AWESOME!'}
+                {lastPointsEarned === 2 ? t('superFast') : t('awesome')}
               </h2>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <Trophy size={20} color={lastPointsEarned === 2 ? '#3b82f6' : '#10b981'} />
@@ -460,62 +230,13 @@ function App() {
         </AnimatePresence>
       </div>
 
-      <div
-        className="tray-container"
-        style={{
-          minHeight: '180px',
-          maxHeight: '40vh',
-          backgroundColor: '#ffffff',
-          borderTop: '2px solid #d1d5db',
-          padding: '1rem',
-          paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))',
-          zIndex: 100,
-        }}
-      >
-        <div className="tray-grid" style={{
-          display: 'grid',
-          justifyContent: 'center',
-          margin: '0 auto',
-          maxWidth: 'fit-content'
-        }}>
-          {Array.from({ length: 15 }).map((_, i) => {
-            const block = blocks.find(b => b.trayIndex === i);
-            return (
-              <div
-                key={i}
-                className="tray-slot"
-                style={{
-                  borderRadius: 12,
-                  backgroundColor: '#f9fafb',
-                  border: '2px dashed #e5e7eb',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative'
-                }}
-              >
-                <AnimatePresence>
-                  {block && !block.isPlaced && (
-                    <motion.div
-                      key={block.id}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      style={{ position: 'absolute' }}
-                    >
-                      <Block
-                        block={block}
-                        onDrop={handleDrop}
-                        containerRef={containerRef}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <Tray 
+        blocks={blocks} 
+        handleDrop={handleDrop} 
+        containerRef={containerRef} 
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={() => setIsDragging(false)}
+      />
     </div>
   );
 }
