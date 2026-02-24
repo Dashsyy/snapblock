@@ -24,7 +24,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
       exit={{ opacity: 0 }}
       style={{
         width: '100vw',
-        height: '100vh',
+        height: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

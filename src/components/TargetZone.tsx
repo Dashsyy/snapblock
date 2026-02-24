@@ -19,6 +19,7 @@ const Slot: React.FC<SlotProps> = ({ correctChar, placedChar, isFilled, onMount,
     <div
       ref={(el) => onMount(index, el)}
       className="target-slot"
+      data-index={index}
       style={{
         borderRadius: 12,
         backgroundColor: isFilled 

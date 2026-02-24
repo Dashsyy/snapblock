@@ -34,7 +34,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
       animate={{ opacity: 1 }}
       style={{
         width: '100vw',
-        height: '100vh',
+        height: '100dvh',
         background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%)',
         display: 'flex',
         flexDirection: 'column',

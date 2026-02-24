@@ -107,6 +107,26 @@ function App() {
     return () => clearInterval(interval);
   }, [lessonTimer, isModuleFinished, showLessonSuccess, targetWord, userName, selectedModule]);
 
+  const updateSlotRects = useCallback(() => {
+    Object.keys(slotRefs.current).forEach(key => {
+      const idx = parseInt(key);
+      const el = document.querySelector(`.target-slot[data-index="${idx}"]`);
+      if (el) {
+        slotRefs.current[idx] = el.getBoundingClientRect();
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('resize', updateSlotRects);
+    // Also update on scroll (though we disabled it on body, the tray might scroll)
+    window.addEventListener('scroll', updateSlotRects, true);
+    return () => {
+      window.removeEventListener('resize', updateSlotRects);
+      window.removeEventListener('scroll', updateSlotRects, true);
+    };
+  }, [updateSlotRects]);
+
   const onSlotMount = (index: number, element: HTMLDivElement | null) => {
     if (element) {
       slotRefs.current[index] = element.getBoundingClientRect();
@@ -236,7 +256,7 @@ function App() {
       ref={containerRef}
       style={{
         width: '100vw',
-        height: '100vh',
+        height: '100dvh',
         overflow: 'hidden',
         position: 'relative',
         display: 'flex',
@@ -257,45 +277,47 @@ function App() {
       </div>
 
       <header style={{ 
-        padding: '0.75rem 1rem', 
+        padding: '0.5rem 0.75rem', 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
         backgroundColor: '#ffffff', 
         borderBottom: '2px solid #d1d5db',
-        flexWrap: 'wrap',
-        gap: '0.5rem',
+        flexWrap: 'nowrap',
+        overflowX: 'auto',
+        gap: '0.75rem',
         position: 'relative',
-        zIndex: 10
+        zIndex: 10,
+        minHeight: '50px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
           <button 
             onClick={handleBackToModules}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center', padding: '4px' }}
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 900, color: '#1f2937' }}>WordSnap</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <h1 style={{ margin: 0, fontSize: '1rem', fontWeight: 900, color: '#1f2937', whiteSpace: 'nowrap' }}>WordSnap</h1>
           </div>
-          <div style={{ height: '24px', width: '2px', backgroundColor: '#e5e7eb' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4b5563', fontWeight: 'bold' }}>
-            <User size={18} />
-            <span style={{ fontSize: '0.9rem' }}>{userName}</span>
+          <div style={{ height: '20px', width: '1px', backgroundColor: '#e5e7eb' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#4b5563', fontWeight: 'bold' }}>
+            <User size={16} />
+            <span style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', maxWidth: '60px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{userName}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#6b7280' }}>
-            <Star size={16} fill="#f59e0b" color="#f59e0b" />
-            <span style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{currentLessonIdx + 1}/10</span>
+            <Star size={14} fill="#f59e0b" color="#f59e0b" />
+            <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{currentLessonIdx + 1}/10</span>
           </div>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '1rem', fontWeight: 'bold' }}>
-            <Timer size={18} color="#3b82f6" />
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
+            <Timer size={16} color="#3b82f6" />
             <span>{Math.floor(elapsedTime / 60)}:{(elapsedTime % 60).toString().padStart(2, '0')}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '1rem', fontWeight: 'bold' }}>
-            <Trophy size={18} color="#f59e0b" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
+            <Trophy size={16} color="#f59e0b" />
             <span>{score}</span>
           </div>
         </div>
@@ -430,20 +452,23 @@ function App() {
       </div>
 
       <div
+        className="tray-container"
         style={{
           minHeight: '220px',
           maxHeight: '40vh',
           backgroundColor: '#ffffff',
           borderTop: '2px solid #d1d5db',
           padding: '1rem',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))',
           zIndex: 100,
-          overflow: 'visible'
         }}
       >
-        <div className="tray-grid">
+        <div className="tray-grid" style={{
+          display: 'grid',
+          justifyContent: 'center',
+          margin: '0 auto',
+          maxWidth: 'fit-content'
+        }}>
           {Array.from({ length: 15 }).map((_, i) => {
             const block = blocks.find(b => b.trayIndex === i);
             return (

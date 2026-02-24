@@ -22,7 +22,19 @@ body {
   background-size: 30px 30px, 30px 30px, 30px 30px;
   width: 100vw;
   height: 100vh;
+  /* Use pan-x pan-y to allow gestures, but we'll control it on specific elements */
   touch-action: none;
+}
+
+.tray-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  scrollbar-width: none; /* Firefox */
+}
+
+.tray-container::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 /* Target Zone Responsive Sizing */
