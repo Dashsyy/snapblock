@@ -23,28 +23,29 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       style={{
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100vw',
         height: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
+        padding: '1rem',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
       {/* Background elements reused from App/Results */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
         <motion.div 
           animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', top: '15%', left: '10%', width: '350px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }}
+          style={{ position: 'absolute', top: '15%', left: '10%', width: 'min(350px, 80vw)', height: 'min(350px, 80vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }}
         />
         <motion.div 
           animate={{ x: [0, -50, 0], y: [0, 40, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', bottom: '10%', right: '15%', width: '450px', height: '450px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(50px)' }}
+          style={{ position: 'absolute', bottom: '10%', right: '15%', width: 'min(450px, 90vw)', height: 'min(450px, 90vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(50px)' }}
         />
       </div>
 
@@ -54,7 +55,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
         transition={SPRING_BOUNCY}
         style={{
           backgroundColor: 'white',
-          padding: '3rem 2.5rem',
+          padding: '2.5rem 1.5rem',
           borderRadius: '3rem',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
           maxWidth: '450px',

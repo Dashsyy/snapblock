@@ -25,11 +25,11 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isModuleFinished, setIsModuleFinished] = useState(false);
   const [showLessonSuccess, setShowLessonSuccess] = useState(false);
-  
+
   const moduleLessons = selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE;
   const currentLesson = moduleLessons[currentLessonIdx];
   const targetWord = currentLesson?.target || "";
-  
+
   const [lessonTimer, setLessonTimer] = useState(15);
   const [initialLessonTimer, setInitialLessonTimer] = useState(15);
   const [isBonusActive, setIsBonusActive] = useState(true);
@@ -41,20 +41,20 @@ function App() {
   const initializeLesson = useCallback((keepScore = true) => {
     if (!targetWord) return;
     const wordChars = targetWord.split('');
-    
+
     let trayChars: string[] = [];
     if (selectedModule === 'MATH') {
       trayChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
       trayChars = [...trayChars, ...Array.from({ length: 5 }, () => Math.floor(Math.random() * 10).toString())];
     } else {
-      const randomChars = Array.from({ length: 15 - wordChars.length }, () => 
+      const randomChars = Array.from({ length: 15 - wordChars.length }, () =>
         String.fromCharCode(65 + Math.floor(Math.random() * 26))
       );
       trayChars = [...wordChars, ...randomChars];
     }
-    
+
     const allChars = trayChars.sort(() => Math.random() - 0.5);
-    
+
     const newBlocks: BlockType[] = allChars.map((char, i) => ({
       id: `${char}-${i}-${Math.random()}`,
       char,
@@ -95,7 +95,7 @@ function App() {
 
   useEffect(() => {
     if (isModuleFinished || showLessonSuccess || !targetWord || !userName || !selectedModule) return;
-    
+
     if (lessonTimer <= 0) {
       setIsBonusActive(false);
       return;
@@ -140,7 +140,7 @@ function App() {
 
     for (let i = 0; i < targetWord.length; i++) {
       if (filledSlots[i]) continue;
-      
+
       const slotRect = slotRefs.current[i];
       if (!slotRect) continue;
 
@@ -153,7 +153,7 @@ function App() {
 
       if (isInside) {
         const isCorrect = block.char === targetWord[i];
-        
+
         if (selectedModule === 'MATH' || isCorrect) {
           if (isCorrect) haptic.success();
           else if (selectedModule === 'MATH') haptic.error();
@@ -170,7 +170,7 @@ function App() {
             return next;
           });
 
-          setBlocks(prev => prev.map(b => 
+          setBlocks(prev => prev.map(b =>
             b.id === blockId ? { ...b, isPlaced: true } : b
           ));
 
@@ -178,7 +178,7 @@ function App() {
             setPlacedChars(currentPlaced => {
               const allCorrect = currentPlaced.every((char, idx) => char === targetWord[idx]);
               const allFilled = currentPlaced.every(char => char !== null);
-              
+
               if (allFilled && allCorrect) {
                 handleLessonComplete();
               }
@@ -198,7 +198,7 @@ function App() {
     setLastPointsEarned(points);
     setShowLessonSuccess(true);
     haptic.double();
-    
+
     setTimeout(() => {
       if (currentLessonIdx < moduleLessons.length - 1) {
         setCurrentLessonIdx(prev => prev + 1);
@@ -241,21 +241,22 @@ function App() {
 
   if (isModuleFinished) {
     return (
-      <ResultsScreen 
+      <ResultsScreen
         userName={userName}
-        score={score} 
-        totalTime={elapsedTime} 
-        onRestart={resetGame} 
+        score={score}
+        totalTime={elapsedTime}
+        onRestart={resetGame}
       />
     );
   }
 
   return (
-    <div 
-      className="app-container" 
+    <div
+      className="app-container"
       ref={containerRef}
       style={{
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100vw',
         height: '100dvh',
         overflow: 'hidden',
         position: 'relative',
@@ -264,24 +265,24 @@ function App() {
       }}
     >
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
-        <motion.div 
+        <motion.div
           animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', top: '10%', left: '10%', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)', filter: 'blur(40px)' }}
+          style={{ position: 'absolute', top: '10%', left: '10%', width: 'min(300px, 80vw)', height: 'min(300px, 80vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)', filter: 'blur(40px)' }}
         />
-        <motion.div 
+        <motion.div
           animate={{ x: [0, -40, 0], y: [0, 60, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', bottom: '20%', right: '10%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
+          style={{ position: 'absolute', bottom: '20%', right: '10%', width: 'min(400px, 90vw)', height: 'min(400px, 90vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)', filter: 'blur(50px)' }}
         />
       </div>
 
-      <header style={{ 
-        padding: '0.5rem 0.75rem', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        backgroundColor: '#ffffff', 
+      <header style={{
+        padding: '0.5rem 0.75rem',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#ffffff',
         borderBottom: '2px solid #d1d5db',
         flexWrap: 'nowrap',
         overflowX: 'auto',
@@ -291,7 +292,7 @@ function App() {
         minHeight: '50px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
-          <button 
+          <button
             onClick={handleBackToModules}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', display: 'flex', alignItems: 'center', padding: '4px' }}
           >
@@ -310,7 +311,7 @@ function App() {
             <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{currentLessonIdx + 1}/10</span>
           </div>
         </div>
-        
+
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.9rem', fontWeight: 'bold' }}>
             <Timer size={16} color="#3b82f6" />
@@ -324,9 +325,9 @@ function App() {
       </header>
 
       <div style={{ width: '100%', height: '8px', backgroundColor: '#e5e7eb', position: 'relative', zIndex: 10 }}>
-        <motion.div 
+        <motion.div
           initial={{ width: '100%' }}
-          animate={{ 
+          animate={{
             width: `${(lessonTimer / initialLessonTimer) * 100}%`,
             backgroundColor: isBonusActive ? '#3b82f6' : '#9ca3af'
           }}
@@ -335,54 +336,62 @@ function App() {
       </div>
 
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', padding: '1rem' }}>
-        
+
         <AnimatePresence mode="wait">
-          {currentLesson && (
-            <motion.div
-              key={currentLesson.id}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-            >
-              {currentLesson.icon && (
-                <div style={{ padding: '2rem', backgroundColor: 'white', borderRadius: '3rem', boxShadow: '0 10px 20px rgba(0,0,0,0.05)', marginBottom: '1.5rem', color: '#3b82f6' }}>
-                  {currentLesson.icon}
-                </div>
-              )}
-              {currentLesson.displayHint && (
-                <div style={{ 
-                  fontSize: 'min(5rem, 12vw)', 
-                  fontWeight: 900, 
-                  color: '#1f2937', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  backgroundColor: 'white',
-                  padding: '1.5rem 3rem',
-                  borderRadius: '2rem',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
-                  border: '4px solid #f1f5f9'
-                }}>
-                  {currentLesson.displayHint}
-                </div>
-              )}
-            </motion.div>
-          )}
+                    {currentLesson && (
+                      <motion.div
+                        key={currentLesson.id}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        style={{ marginBottom: 'min(1.5rem, 3vh)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                      >
+                        {currentLesson.icon && (
+                          <div style={{ 
+                            padding: 'min(2rem, 4vh)', 
+                            backgroundColor: 'white', 
+                            borderRadius: '3rem', 
+                            boxShadow: '0 10px 20px rgba(0,0,0,0.05)', 
+                            marginBottom: 'min(1.5rem, 3vh)', 
+                            color: '#3b82f6' 
+                          }}>
+                            {currentLesson.icon}
+                          </div>
+                        )}
+                        {currentLesson.displayHint && (
+                          <div style={{ 
+                            fontSize: 'min(5rem, 10vh, 12vw)', 
+                            fontWeight: 900, 
+                            color: '#1f2937', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '0.5rem',
+                            backgroundColor: 'white',
+                            padding: 'min(1.5rem, 3vh) min(3rem, 6vw)',
+                            borderRadius: '2rem',
+                            boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                            border: '4px solid #f1f5f9'
+                          }}>
+                            {currentLesson.displayHint}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+          
         </AnimatePresence>
 
         <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', width: '100%' }}>
-          
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-             {isBonusActive ? (
-               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                 <Zap size={18} fill="#3b82f6" />
-                 <span>BONUS ACTIVE (x2 POINTS!)</span>
-                 <span style={{ backgroundColor: '#dbeafe', padding: '2px 8px', borderRadius: '10px' }}>{lessonTimer}s</span>
-               </div>
-             ) : (
-               <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.9rem' }}>TIME'S UP! (NORMAL SCORE)</span>
-             )}
+            {isBonusActive ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3b82f6', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                <Zap size={18} fill="#3b82f6" />
+                <span>BONUS ACTIVE (x2 POINTS!)</span>
+                <span style={{ backgroundColor: '#dbeafe', padding: '2px 8px', borderRadius: '10px' }}>{lessonTimer}s</span>
+              </div>
+            ) : (
+              <span style={{ color: '#9ca3af', fontWeight: 'bold', fontSize: '0.9rem' }}>TIME'S UP! (NORMAL SCORE)</span>
+            )}
           </div>
 
           <TargetZone
@@ -395,7 +404,7 @@ function App() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem', minHeight: '60px' }}>
             <AnimatePresence>
               {filledSlots.some(s => s) && (
-                <motion.button 
+                <motion.button
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -418,7 +427,7 @@ function App() {
             </AnimatePresence>
           </div>
         </div>
-        
+
         <AnimatePresence>
           {showLessonSuccess && (
             <motion.div
@@ -454,7 +463,7 @@ function App() {
       <div
         className="tray-container"
         style={{
-          minHeight: '220px',
+          minHeight: '180px',
           maxHeight: '40vh',
           backgroundColor: '#ffffff',
           borderTop: '2px solid #d1d5db',
@@ -472,11 +481,11 @@ function App() {
           {Array.from({ length: 15 }).map((_, i) => {
             const block = blocks.find(b => b.trayIndex === i);
             return (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="tray-slot"
-                style={{ 
-                  borderRadius: 12, 
+                style={{
+                  borderRadius: 12,
                   backgroundColor: '#f9fafb',
                   border: '2px dashed #e5e7eb',
                   display: 'flex',

@@ -43,14 +43,16 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSele
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       style={{
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100vw',
         height: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
-        position: 'relative'
+        padding: '1rem',
+        position: 'relative',
+        overflowX: 'hidden'
       }}
     >
       <motion.div

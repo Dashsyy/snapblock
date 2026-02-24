@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -20,7 +24,7 @@ body {
     linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
   background-size: 30px 30px, 30px 30px, 30px 30px;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   /* Use pan-x pan-y to allow gestures, but we'll control it on specific elements */
   touch-action: none;
@@ -37,33 +41,60 @@ body {
   display: none; /* Safari and Chrome */
 }
 
-/* Target Zone Responsive Sizing */
+/* Mobile First Defaults (Smallest screens < 360px) */
 .target-slot {
-  width: 60px;
-  height: 60px;
-  font-size: 1.8rem;
-}
-.filled-block {
   width: 50px;
   height: 50px;
   font-size: 1.5rem;
 }
+.filled-block {
+  width: 44px;
+  height: 44px;
+  font-size: 1.2rem;
+}
 
 /* Tray Slot Responsive Sizing */
 .tray-slot {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
 }
 
 /* Block Component Responsive Sizing */
 .letter-block {
-  width: 55px;
-  height: 55px;
-  font-size: 1.5rem;
+  width: 46px;
+  height: 46px;
+  font-size: 1.3rem;
 }
 .block-stud {
-  width: 20px;
-  height: 8px;
+  width: 16px;
+  height: 6px;
+}
+
+/* Medium Mobile (≥ 360px) */
+@media (min-width: 360px) {
+  .target-slot {
+    width: 60px;
+    height: 60px;
+    font-size: 1.8rem;
+  }
+  .filled-block {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+  .tray-slot {
+    width: 60px;
+    height: 60px;
+  }
+  .letter-block {
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+  }
+  .block-stud {
+    width: 20px;
+    height: 8px;
+  }
 }
 
 /* Tablet / iPad Layout (≥ 768px) */

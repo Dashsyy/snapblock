@@ -33,30 +33,31 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       style={{
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100vw',
         height: '100dvh',
         background: 'radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem',
+        padding: '1rem',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
       }}
     >
       {/* Decorative Background Blobs */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
         <motion.div 
           animate={{ x: [0, 40, 0], y: [0, -30, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', top: '20%', left: '15%', width: '300px', height: '350px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }}
+          style={{ position: 'absolute', top: '20%', left: '15%', width: 'min(300px, 80vw)', height: 'min(350px, 80vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }}
         />
         <motion.div 
           animate={{ x: [0, -60, 0], y: [0, 50, 0] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', bottom: '15%', right: '15%', width: '400px', height: '400px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%)', filter: 'blur(50px)' }}
+          style={{ position: 'absolute', bottom: '15%', right: '15%', width: 'min(400px, 90vw)', height: 'min(400px, 90vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%)', filter: 'blur(50px)' }}
         />
       </div>
 
