@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { audio } from '../utils/audio';
 
 interface IntroScreenProps {
   onStart: (name: string) => void;
@@ -25,6 +26,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name.trim()) {
+      audio.unlock();
       onStart(name.trim());
     }
   };

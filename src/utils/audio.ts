@@ -67,6 +67,8 @@ class AudioManager {
         if (playPromise !== undefined) {
           playPromise.catch(error => {
             console.warn(`Audio playback failed for ${name}:`, error);
+            // If it failed, try to unlock (though this is only effective during direct user interaction)
+            this.unlock();
           });
         }
       } catch (e) {
@@ -77,6 +79,22 @@ class AudioManager {
 
   public toggle(enabled: boolean) {
     this.enabled = enabled;
+  }
+
+  /**
+   * Unlocks audio on mobile browsers.
+   * Call this during a user interaction (like a button click).
+   */
+  public unlock() {
+    const silentAudio = new Audio();
+    silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
+    silentAudio.play().catch(() => {});
+    
+    // Resume audio context if it exists (for Web Audio API, though we use HTMLAudioElement)
+    // This is just a safety measure for some browsers
+    this.sounds.forEach(sound => {
+      sound.load();
+    });
   }
 }
 
