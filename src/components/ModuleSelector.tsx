@@ -16,7 +16,7 @@ interface ModuleSelectorProps {
 }
 
 export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSelect }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [tempModule, setTempModule] = useState<ModuleType | null>(null);
   const iconSize = 'clamp(24px, 5vh, 40px)';
 

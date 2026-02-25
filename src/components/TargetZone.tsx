@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { SPRING_SNAPPY } from '../constants/animations';
 import { X, Check } from 'lucide-react';
 
 interface SlotProps {

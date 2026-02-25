@@ -25,7 +25,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   const [showLessonSuccess, setShowLessonSuccess] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hintBlockId, setHintBlockId] = useState<string | null>(null);
-  const hintTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hintTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetHintTimeout = useCallback(() => {
     if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
