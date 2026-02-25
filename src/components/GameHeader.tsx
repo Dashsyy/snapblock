@@ -6,6 +6,7 @@ interface GameHeaderProps {
   userName: string;
   moduleTitle: string;
   currentLessonIdx: number;
+  totalLessons: number;
   elapsedTime: number;
   score: number;
   onBack: () => void;
@@ -15,6 +16,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   userName, 
   moduleTitle,
   currentLessonIdx, 
+  totalLessons,
   elapsedTime, 
   score, 
   onBack 
@@ -53,7 +55,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#6b7280' }}>
           <Star size={14} fill="#f59e0b" color="#f59e0b" />
-          <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{currentLessonIdx + 1}/10</span>
+          <span style={{ fontWeight: 'bold', fontSize: '0.8rem' }}>{currentLessonIdx + 1}/{totalLessons}</span>
         </div>
       </div>
       

@@ -2,12 +2,14 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import type { BlockType } from '../components/Block';
 import type { ModuleType } from '../components/ModuleSelector';
 import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE } from '../data/lessons';
+import type { LevelType, Lesson } from '../data/lessons';
 import { haptic } from '../utils/haptics';
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
-export const useGameLogic = (userName: string | null, selectedModule: ModuleType | null) => {
+export const useGameLogic = (userName: string | null, selectedModule: ModuleType | null, selectedLevel: LevelType | null) => {
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
+  const [moduleLessons, setModuleLessons] = useState<Lesson[]>([]);
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [filledSlots, setFilledSlots] = useState<boolean[]>([]);
   const [placedChars, setPlacedChars] = useState<(string | null)[]>([]);
@@ -18,7 +20,6 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   const [showLessonSuccess, setShowLessonSuccess] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   
-  const moduleLessons = selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE;
   const currentLesson = moduleLessons[currentLessonIdx];
   const targetWord = currentLesson?.target || "";
   
@@ -26,6 +27,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   const [initialLessonTimer, setInitialLessonTimer] = useState(15);
   const [isBonusActive, setIsBonusActive] = useState(true);
   const [lastPointsEarned, setLastPointsEarned] = useState(0);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const slotRefs = useRef<{ [key: number]: DOMRect }>({});
 
@@ -71,10 +73,23 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   }, [targetWord, selectedModule]);
 
   useEffect(() => {
-    if (userName && selectedModule) {
-      initializeLesson();
+    if (userName && selectedModule && selectedLevel) {
+      const allLessons = (selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE)[selectedLevel];
+      const shuffled = [...allLessons].sort(() => Math.random() - 0.5);
+      setModuleLessons(shuffled.slice(0, 5));
+      setCurrentLessonIdx(0);
+      setIsModuleFinished(false);
+      setScore(0);
+      setElapsedTime(0);
+      setStartTime(Date.now());
     }
-  }, [initializeLesson, userName, selectedModule]);
+  }, [userName, selectedModule, selectedLevel]);
+
+  useEffect(() => {
+    if (moduleLessons.length > 0) {
+      initializeLesson(currentLessonIdx > 0);
+    }
+  }, [moduleLessons, currentLessonIdx, initializeLesson]);
 
   useEffect(() => {
     if (isModuleFinished || !userName || !selectedModule) return;
@@ -100,8 +115,14 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
 
   const handleLessonComplete = useCallback(() => {
     const points = isBonusActive ? 2 : 1;
+    const bonusMessages = ['superFast', 'amazing', 'fantastic', 'bravo'];
+    const standardMessages = ['awesome', 'wellDone', 'greatJob', 'keepItUp'];
+    const messagePool = points === 2 ? bonusMessages : standardMessages;
+    const randomMessage = messagePool[Math.floor(Math.random() * messagePool.length)];
+    
     setScore(prev => prev + points);
     setLastPointsEarned(points);
+    setSuccessMessage(randomMessage);
     setShowLessonSuccess(true);
     haptic.double();
     
@@ -182,12 +203,17 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   }, [targetWord]);
 
   const resetGame = useCallback(() => {
+    if (selectedModule && selectedLevel) {
+      const allLessons = (selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE)[selectedLevel];
+      const shuffled = [...allLessons].sort(() => Math.random() - 0.5);
+      setModuleLessons(shuffled.slice(0, 5));
+    }
     setCurrentLessonIdx(0);
     setIsModuleFinished(false);
     setStartTime(Date.now());
     setElapsedTime(0);
-    initializeLesson(false);
-  }, [initializeLesson]);
+    setScore(0);
+  }, [selectedModule, selectedLevel]);
 
   return {
     currentLessonIdx,
@@ -202,6 +228,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     initialLessonTimer,
     isBonusActive,
     lastPointsEarned,
+    successMessage,
     currentLesson,
     targetWord,
     slotRefs,
@@ -213,6 +240,8 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     setIsModuleFinished,
     setCurrentLessonIdx,
     isDragging,
-    setIsDragging
+    setIsDragging,
+    totalLessons: moduleLessons.length
   };
 };
+

@@ -1,5 +1,8 @@
 import React from 'react';
-import { Dog, Bird, Apple, Fish, Smile, Car, Heart, Sun, Cloud, Star } from 'lucide-react';
+import { 
+  Dog, Bird, Apple, Fish, Smile, Car, Heart, Sun, Cloud, Star, 
+  Ghost, Moon, Flower, Pizza, Coffee, Zap, Anchor, Bell, Bike, Camera 
+} from 'lucide-react';
 
 export interface Lesson {
   id: string;
@@ -8,41 +11,123 @@ export interface Lesson {
   icon?: React.ReactNode;
 }
 
-export const WORD_MODULE: Lesson[] = [
-  { id: '1', target: 'HELLO' },
-  { id: '2', target: 'CAT' },
-  { id: '3', target: 'DOG' },
-  { id: '4', target: 'HAPPY' },
-  { id: '5', target: 'APPLE' },
-  { id: '6', target: 'BIRD' },
-  { id: '7', target: 'FISH' },
-  { id: '8', target: 'SMILE' },
-  { id: '9', target: 'BLUE' },
-  { id: '10', target: 'GREEN' },
-];
+export type LevelType = 1 | 2 | 3;
 
-export const MATH_MODULE: Lesson[] = [
-  { id: 'm1', target: '5', displayHint: '2 + 3 = ?' },
-  { id: 'm2', target: '9', displayHint: '5 + 4 = ?' },
-  { id: 'm3', target: '4', displayHint: '10 - 6 = ?' },
-  { id: 'm4', target: '8', displayHint: '4 + 4 = ?' },
-  { id: 'm5', target: '2', displayHint: '1 + 1 = ?' },
-  { id: 'm6', target: '7', displayHint: '3 + 4 = ?' },
-  { id: 'm7', target: '6', displayHint: '12 - 6 = ?' },
-  { id: 'm8', target: '10', displayHint: '5 + 5 = ?' },
-  { id: 'm9', target: '3', displayHint: '7 - 4 = ?' },
-  { id: 'm10', target: '1', displayHint: '5 - 4 = ?' },
-];
+export const WORD_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'w1-1', target: 'CAT' },
+    { id: 'w1-2', target: 'DOG' },
+    { id: 'w1-3', target: 'FISH' },
+    { id: 'w1-4', target: 'BIRD' },
+    { id: 'w1-5', target: 'SUN' },
+    { id: 'w1-6', target: 'STAR' },
+    { id: 'w1-7', target: 'MILK' },
+    { id: 'w1-8', target: 'BOOK' },
+    { id: 'w1-9', target: 'BALL' },
+    { id: 'w1-10', target: 'CAKE' },
+  ],
+  2: [
+    { id: 'w2-1', target: 'HELLO' },
+    { id: 'w2-2', target: 'HAPPY' },
+    { id: 'w2-3', target: 'APPLE' },
+    { id: 'w2-4', target: 'SMILE' },
+    { id: 'w2-5', target: 'GREEN' },
+    { id: 'w2-6', target: 'HOUSE' },
+    { id: 'w2-7', target: 'WATER' },
+    { id: 'w2-8', target: 'BREAD' },
+    { id: 'w2-9', target: 'FRUIT' },
+    { id: 'w2-10', target: 'CANDY' },
+  ],
+  3: [
+    { id: 'w3-1', target: 'RAINBOW' },
+    { id: 'w3-2', target: 'CHICKEN' },
+    { id: 'w3-3', target: 'BANANA' },
+    { id: 'w3-4', target: 'ELEPHANT' },
+    { id: 'w3-5', target: 'COMPUTER' },
+    { id: 'w3-6', target: 'MOUNTAIN' },
+    { id: 'w3-7', target: 'GARDEN' },
+    { id: 'w3-8', target: 'FRIENDS' },
+    { id: 'w3-9', target: 'BIRTHDAY' },
+    { id: 'w3-10', target: 'SUNFLOWER' },
+  ],
+};
 
-export const VISUAL_MODULE: Lesson[] = [
-  { id: 'v1', target: 'DOG', icon: <Dog size={60} /> },
-  { id: 'v2', target: 'BIRD', icon: <Bird size={60} /> },
-  { id: 'v3', target: 'APPLE', icon: <Apple size={60} /> },
-  { id: 'v4', target: 'FISH', icon: <Fish size={60} /> },
-  { id: 'v5', target: 'SMILE', icon: <Smile size={60} /> },
-  { id: 'v6', target: 'CAR', icon: <Car size={60} /> },
-  { id: 'v7', target: 'HEART', icon: <Heart size={60} /> },
-  { id: 'v8', target: 'SUN', icon: <Sun size={60} /> },
-  { id: 'v9', target: 'CLOUD', icon: <Cloud size={60} /> },
-  { id: 'v10', target: 'CAT', icon: <Star size={60} /> },
-];
+export const MATH_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'm1-1', target: '5', displayHint: '2 + 3 = ?' },
+    { id: 'm1-2', target: '9', displayHint: '5 + 4 = ?' },
+    { id: 'm1-3', target: '2', displayHint: '1 + 1 = ?' },
+    { id: 'm1-4', target: '7', displayHint: '3 + 4 = ?' },
+    { id: 'm1-5', target: '10', displayHint: '5 + 5 = ?' },
+    { id: 'm1-6', target: '4', displayHint: '2 + 2 = ?' },
+    { id: 'm1-7', target: '7', displayHint: '6 + 1 = ?' },
+    { id: 'm1-8', target: '8', displayHint: '4 + 4 = ?' },
+    { id: 'm1-9', target: '9', displayHint: '7 + 2 = ?' },
+    { id: 'm1-10', target: '6', displayHint: '3 + 3 = ?' },
+  ],
+  2: [
+    { id: 'm2-1', target: '4', displayHint: '10 - 6 = ?' },
+    { id: 'm2-2', target: '6', displayHint: '12 - 6 = ?' },
+    { id: 'm2-3', target: '3', displayHint: '7 - 4 = ?' },
+    { id: 'm2-4', target: '1', displayHint: '5 - 4 = ?' },
+    { id: 'm2-5', target: '4', displayHint: '9 - 5 = ?' },
+    { id: 'm2-6', target: '5', displayHint: '8 - 3 = ?' },
+    { id: 'm2-7', target: '4', displayHint: '6 - 2 = ?' },
+    { id: 'm2-8', target: '8', displayHint: '10 - 2 = ?' },
+    { id: 'm2-9', target: '3', displayHint: '4 - 1 = ?' },
+    { id: 'm2-10', target: '7', displayHint: '10 - 3 = ?' },
+  ],
+  3: [
+    { id: 'm3-1', target: '8', displayHint: '15 - 7 = ?' },
+    { id: 'm3-2', target: '15', displayHint: '8 + 7 = ?' },
+    { id: 'm3-3', target: '10', displayHint: '20 - 10 = ?' },
+    { id: 'm3-4', target: '15', displayHint: '9 + 6 = ?' },
+    { id: 'm3-5', target: '8', displayHint: '14 - 6 = ?' },
+    { id: 'm3-6', target: '20', displayHint: '12 + 8 = ?' },
+    { id: 'm3-7', target: '9', displayHint: '18 - 9 = ?' },
+    { id: 'm3-8', target: '16', displayHint: '7 + 9 = ?' },
+    { id: 'm3-9', target: '7', displayHint: '11 - 4 = ?' },
+    { id: 'm3-10', target: '18', displayHint: '13 + 5 = ?' },
+  ],
+};
+
+export const VISUAL_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'v1-1', target: 'DOG', icon: <Dog size={60} /> },
+    { id: 'v1-2', target: 'BIRD', icon: <Bird size={60} /> },
+    { id: 'v1-3', target: 'APPLE', icon: <Apple size={60} /> },
+    { id: 'v1-4', target: 'FISH', icon: <Fish size={60} /> },
+    { id: 'v1-5', target: 'SMILE', icon: <Smile size={60} /> },
+    { id: 'v1-6', target: 'SUN', icon: <Sun size={60} /> },
+    { id: 'v1-7', target: 'STAR', icon: <Star size={60} /> },
+    { id: 'v1-8', target: 'HEART', icon: <Heart size={60} /> },
+    { id: 'v1-9', target: 'CLOUD', icon: <Cloud size={60} /> },
+    { id: 'v1-10', target: 'MOON', icon: <Moon size={60} /> },
+  ],
+  2: [
+    { id: 'v2-1', target: 'CAR', icon: <Car size={60} /> },
+    { id: 'v2-2', target: 'GHOST', icon: <Ghost size={60} /> },
+    { id: 'v2-3', target: 'FLOWER', icon: <Flower size={60} /> },
+    { id: 'v2-4', target: 'PIZZA', icon: <Pizza size={60} /> },
+    { id: 'v2-5', target: 'COFFEE', icon: <Coffee size={60} /> },
+    { id: 'v2-6', target: 'BOLT', icon: <Zap size={60} /> },
+    { id: 'v2-7', target: 'ANCHOR', icon: <Anchor size={60} /> },
+    { id: 'v2-8', target: 'BELL', icon: <Bell size={60} /> },
+    { id: 'v2-9', target: 'BIKE', icon: <Bike size={60} /> },
+    { id: 'v2-10', target: 'CAMERA', icon: <Camera size={60} /> },
+  ],
+  3: [
+    // Mixed hard words with icons
+    { id: 'v3-1', target: 'PUPPY', icon: <Dog size={60} /> },
+    { id: 'v3-2', target: 'RAINBOW', icon: <Cloud size={60} /> },
+    { id: 'v3-3', target: 'KITTEN', icon: <Star size={60} /> },
+    { id: 'v3-4', target: 'ROCKET', icon: <Zap size={60} /> },
+    { id: 'v3-5', target: 'FOREST', icon: <Flower size={60} /> },
+    { id: 'v3-6', target: 'OCEAN', icon: <Anchor size={60} /> },
+    { id: 'v3-7', target: 'MOUNTAIN', icon: <Cloud size={60} /> },
+    { id: 'v3-8', target: 'BICYCLE', icon: <Bike size={60} /> },
+    { id: 'v3-9', target: 'DESSERT', icon: <Pizza size={60} /> },
+    { id: 'v3-10', target: 'MORNING', icon: <Sun size={60} /> },
+  ],
+};
+

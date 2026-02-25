@@ -17,7 +17,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
   const seconds = totalTime % 60;
 
   // Calculate Performance
-  const percentage = (score / 20) * 100;
+  const percentage = (score / 10) * 100;
   
   let grade = { label: t('keepTrying'), color: '#94a3b8', desc: t('moduleDesc.WORD') };
   if (percentage === 100) {

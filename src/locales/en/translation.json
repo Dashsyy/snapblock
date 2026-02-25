@@ -4,6 +4,17 @@
   "introTitle": "WordSnap Academy",
   "introSub": "Ready to master your skills?",
   "selectModule": "Which academy would you like to join today?",
+  "selectLevel": "Choose your challenge level",
+  "levels": {
+    "1": "Level 1",
+    "2": "Level 2",
+    "3": "Level 3"
+  },
+  "levelDesc": {
+    "1": "Rookie: Fun & Easy!",
+    "2": "Expert: Take the challenge!",
+    "3": "Master: For the pros!"
+  },
   "startLearning": "START LEARNING",
   "whatsYourName": "WHAT'S YOUR NAME?",
   "enterName": "Enter your name...",
@@ -14,6 +25,12 @@
   "lessonProgress": "{{current}}/{{total}}",
   "superFast": "SUPER FAST!",
   "awesome": "AWESOME!",
+  "amazing": "AMAZING!",
+  "fantastic": "FANTASTIC!",
+  "bravo": "BRAVO!",
+  "wellDone": "WELL DONE!",
+  "greatJob": "GREAT JOB!",
+  "keepItUp": "KEEP IT UP!",
   "retryModule": "RETRY MODULE",
   "score": "SCORE",
   "time": "TIME",

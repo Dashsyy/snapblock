@@ -5,6 +5,7 @@ import { ResultsScreen } from './components/ResultsScreen';
 import { IntroScreen } from './components/IntroScreen';
 import { ModuleSelector } from './components/ModuleSelector';
 import type { ModuleType } from './components/ModuleSelector';
+import type { LevelType } from './data/lessons';
 import { Zap, Trophy } from 'lucide-react';
 import { useGameLogic } from './hooks/useGameLogic';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ import { Tray } from './components/Tray';
 function App() {
   const [userName, setUserName] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<ModuleType | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<LevelType | null>(null);
   const { t } = useTranslation();
   
   const {
@@ -33,6 +35,7 @@ function App() {
     initialLessonTimer,
     isBonusActive,
     lastPointsEarned,
+    successMessage,
     currentLesson,
     targetWord,
     slotRefs,
@@ -44,8 +47,9 @@ function App() {
     setIsModuleFinished,
     setCurrentLessonIdx,
     isDragging,
-    setIsDragging
-  } = useGameLogic(userName, selectedModule);
+    setIsDragging,
+    totalLessons
+  } = useGameLogic(userName, selectedModule, selectedLevel);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,12 +79,13 @@ function App() {
   };
 
   const getModuleTitle = () => {
-    if (!selectedModule) return '';
-    return t(`modules.${selectedModule}`);
+    if (!selectedModule || !selectedLevel) return '';
+    return `${t(`modules.${selectedModule}`)} - ${t(`levels.${selectedLevel}`)}`;
   };
 
   const handleBackToModules = () => {
     setSelectedModule(null);
+    setSelectedLevel(null);
     setCurrentLessonIdx(0);
     setIsModuleFinished(false);
     setScore(0);
@@ -91,8 +96,16 @@ function App() {
     return <IntroScreen onStart={(name) => setUserName(name)} />;
   }
 
-  if (!selectedModule) {
-    return <ModuleSelector userName={userName} onSelect={(mod) => setSelectedModule(mod)} />;
+  if (!selectedModule || !selectedLevel) {
+    return (
+      <ModuleSelector 
+        userName={userName} 
+        onSelect={(mod, level) => {
+          setSelectedModule(mod);
+          setSelectedLevel(level);
+        }} 
+      />
+    );
   }
 
   if (isModuleFinished) {
@@ -126,6 +139,7 @@ function App() {
         userName={userName}
         moduleTitle={getModuleTitle()}
         currentLessonIdx={currentLessonIdx}
+        totalLessons={totalLessons}
         elapsedTime={elapsedTime}
         score={score}
         onBack={handleBackToModules}
@@ -219,7 +233,7 @@ function App() {
               }}
             >
               <h2 style={{ fontSize: '2rem', color: lastPointsEarned === 2 ? '#3b82f6' : '#10b981', margin: 0 }}>
-                {lastPointsEarned === 2 ? t('superFast') : t('awesome')}
+                {t(successMessage)}
               </h2>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
                 <Trophy size={20} color={lastPointsEarned === 2 ? '#3b82f6' : '#10b981'} />
