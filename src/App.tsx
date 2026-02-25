@@ -20,7 +20,27 @@ function App() {
   const [userName, setUserName] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<ModuleType | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<LevelType | null>(null);
+  const [completedModules, setCompletedModules] = useState<string[]>([]);
   const { t } = useTranslation();
+
+  // Load progress from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('snapblocks_progress');
+    if (saved) {
+      try {
+        setCompletedModules(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse progress", e);
+      }
+    }
+  }, []);
+
+  // Save progress when it changes
+  useEffect(() => {
+    if (completedModules.length > 0) {
+      localStorage.setItem('snapblocks_progress', JSON.stringify(completedModules));
+    }
+  }, [completedModules]);
   
   const {
     currentLessonIdx,
@@ -52,6 +72,19 @@ function App() {
     hintBlockId,
     totalLessons
   } = useGameLogic(userName, selectedModule, selectedLevel);
+
+  // Update progress when module is finished
+  useEffect(() => {
+    if (isModuleFinished && selectedModule && selectedLevel) {
+      const moduleKey = `${selectedModule}-${selectedLevel}`;
+      setCompletedModules(prev => {
+        if (!prev.includes(moduleKey)) {
+          return [...prev, moduleKey];
+        }
+        return prev;
+      });
+    }
+  }, [isModuleFinished, selectedModule, selectedLevel]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -110,6 +143,7 @@ function App() {
     return (
       <ModuleSelector 
         userName={userName} 
+        completedModules={completedModules}
         onSelect={(mod, level) => {
           setSelectedModule(mod);
           setSelectedLevel(level);
@@ -125,6 +159,7 @@ function App() {
         score={score} 
         totalTime={elapsedTime} 
         onRestart={resetGame} 
+        onHome={handleBackToModules}
       />
     );
   }

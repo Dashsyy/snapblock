@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck } from 'lucide-react';
+import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2 } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
@@ -8,14 +8,15 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import type { LevelType } from '../data/lessons';
 
-export type ModuleType = 'WORD' | 'MATH' | 'VISUAL';
+export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS';
 
 interface ModuleSelectorProps {
   userName: string;
+  completedModules: string[];
   onSelect: (module: ModuleType, level: LevelType) => void;
 }
 
-export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSelect }) => {
+export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, completedModules, onSelect }) => {
   const { t } = useTranslation();
   const [tempModule, setTempModule] = useState<ModuleType | null>(null);
   const iconSize = 'clamp(24px, 5vh, 40px)';
@@ -47,6 +48,15 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSele
       color: '#f59e0b',
       bg: '#fffbeb',
       accent: '#fef3c7'
+    },
+    {
+      id: 'ELECTRONICS' as ModuleType,
+      title: t('modules.ELECTRONICS'),
+      desc: t('moduleDesc.ELECTRONICS'),
+      icon: <Cpu size={iconSize} />,
+      color: '#8b5cf6',
+      bg: '#f5f3ff',
+      accent: '#ede9fe'
     }
   ];
 
@@ -291,45 +301,53 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSele
                 maxWidth: '500px'
               }}
             >
-              {levels.map((level, i) => (
-                <motion.div
-                  key={level.id}
-                  initial={{ x: 50, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.1 + i * 0.1, ...SPRING_BOUNCY }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleLevelSelect(level.id)}
-                  style={{
-                    backgroundColor: 'white',
-                    padding: '1.25rem',
-                    borderRadius: '2rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.5rem',
-                    boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
-                    border: `1px solid rgba(0,0,0,0.05)`,
-                  }}
-                >
-                  <div style={{
-                    padding: '1rem',
-                    backgroundColor: level.bg,
-                    color: level.color,
-                    borderRadius: '1.5rem',
-                  }}>
-                    {level.icon}
-                  </div>
-                  <div style={{ textAlign: 'left' }}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1f2937', marginBottom: '0.25rem' }}>
-                      {t(`levels.${level.id}`)}
-                    </h2>
-                    <p style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}>
-                      {t(`levelDesc.${level.id}`)}
-                    </p>
-                  </div>
-                  <ArrowRight size={24} style={{ marginLeft: 'auto', color: '#d1d5db' }} />
-                </motion.div>
-              ))}
+              {levels.map((level, i) => {
+                const isCompleted = completedModules.includes(`${tempModule}-${level.id}`);
+                return (
+                  <motion.div
+                    key={level.id}
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 + i * 0.1, ...SPRING_BOUNCY }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleLevelSelect(level.id)}
+                    style={{
+                      backgroundColor: 'white',
+                      padding: '1.25rem',
+                      borderRadius: '2rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1.5rem',
+                      boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.05)',
+                      border: isCompleted ? `2px solid ${level.color}40` : `1px solid rgba(0,0,0,0.05)`,
+                      position: 'relative'
+                    }}
+                  >
+                    <div style={{
+                      padding: '1rem',
+                      backgroundColor: level.bg,
+                      color: level.color,
+                      borderRadius: '1.5rem',
+                    }}>
+                      {level.icon}
+                    </div>
+                    <div style={{ textAlign: 'left' }}>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#1f2937', marginBottom: '0.25rem' }}>
+                        {t(`levels.${level.id}`)}
+                      </h2>
+                      <p style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}>
+                        {t(`levelDesc.${level.id}`)}
+                      </p>
+                    </div>
+                    {isCompleted ? (
+                      <CheckCircle2 size={24} color={level.color} style={{ marginLeft: 'auto' }} />
+                    ) : (
+                      <ArrowRight size={24} style={{ marginLeft: 'auto', color: '#d1d5db' }} />
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </motion.div>
         )}

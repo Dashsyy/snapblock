@@ -1,12 +1,24 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { BlockType } from '../components/Block';
 import type { ModuleType } from '../components/ModuleSelector';
-import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE } from '../data/lessons';
+import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE, ELECTRONICS_MODULE } from '../data/lessons';
 import type { LevelType, Lesson } from '../data/lessons';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+/**
+ * Fisher-Yates Shuffle for uniform randomness
+ */
+function shuffle<T>(array: T[]): T[] {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
 export const useGameLogic = (userName: string | null, selectedModule: ModuleType | null, selectedLevel: LevelType | null) => {
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
@@ -77,7 +89,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
       trayChars = [...wordChars, ...randomChars];
     }
     
-    const allChars = trayChars.sort(() => Math.random() - 0.5);
+    const allChars = shuffle(trayChars);
     
     const newBlocks: BlockType[] = allChars.map((char, i) => ({
       id: `${char}-${i}-${Math.random()}`,
@@ -105,8 +117,18 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
 
   useEffect(() => {
     if (userName && selectedModule && selectedLevel) {
-      const allLessons = (selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE)[selectedLevel];
-      const shuffled = [...allLessons].sort(() => Math.random() - 0.5);
+      let allLessons: Lesson[] = [];
+      if (selectedModule === 'MATH') {
+        allLessons = MATH_MODULE[selectedLevel];
+      } else if (selectedModule === 'VISUAL') {
+        allLessons = VISUAL_MODULE[selectedLevel];
+      } else if (selectedModule === 'ELECTRONICS') {
+        allLessons = ELECTRONICS_MODULE[selectedLevel];
+      } else {
+        allLessons = WORD_MODULE[selectedLevel];
+      }
+      
+      const shuffled = shuffle(allLessons);
       setModuleLessons(shuffled.slice(0, 5));
       setCurrentLessonIdx(0);
       setIsModuleFinished(false);
@@ -298,8 +320,17 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
 
   const resetGame = useCallback(() => {
     if (selectedModule && selectedLevel) {
-      const allLessons = (selectedModule === 'MATH' ? MATH_MODULE : selectedModule === 'VISUAL' ? VISUAL_MODULE : WORD_MODULE)[selectedLevel];
-      const shuffled = [...allLessons].sort(() => Math.random() - 0.5);
+      let allLessons: Lesson[] = [];
+      if (selectedModule === 'MATH') {
+        allLessons = MATH_MODULE[selectedLevel];
+      } else if (selectedModule === 'VISUAL') {
+        allLessons = VISUAL_MODULE[selectedLevel];
+      } else if (selectedModule === 'ELECTRONICS') {
+        allLessons = ELECTRONICS_MODULE[selectedLevel];
+      } else {
+        allLessons = WORD_MODULE[selectedLevel];
+      }
+      const shuffled = shuffle(allLessons);
       setModuleLessons(shuffled.slice(0, 5));
     }
     setCurrentLessonIdx(0);

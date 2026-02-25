@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Trophy, RotateCcw, Clock, Star } from 'lucide-react';
+import { Trophy, RotateCcw, Clock, Star, Home } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
@@ -11,9 +11,10 @@ interface ResultsScreenProps {
   score: number;
   totalTime: number;
   onRestart: () => void;
+  onHome: () => void;
 }
 
-export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, totalTime, onRestart }) => {
+export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, totalTime, onRestart, onHome }) => {
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -145,34 +146,64 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            audio.play('select');
-            onRestart();
-          }}
-          style={{
-            width: '100%',
-            padding: '1rem',
-            borderRadius: '1.5rem',
-            border: 'none',
-            backgroundColor: '#1f2937',
-            color: 'white',
-            fontSize: '1.1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.75rem',
-            transition: 'transform 0.2s',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-          }}
-          onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
-          onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <RotateCcw size={24} />
-          {t('retryModule')}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <button
+            onClick={() => {
+              audio.play('select');
+              onRestart();
+            }}
+            style={{
+              width: '100%',
+              padding: '1rem',
+              borderRadius: '1.5rem',
+              border: 'none',
+              backgroundColor: '#1f2937',
+              color: 'white',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              transition: 'transform 0.2s',
+              boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <RotateCcw size={24} />
+            {t('retryModule')}
+          </button>
+
+          <button
+            onClick={() => {
+              audio.play('switch');
+              onHome();
+            }}
+            style={{
+              width: '100%',
+              padding: '1rem',
+              borderRadius: '1.5rem',
+              border: '2px solid #e2e8f0',
+              backgroundColor: 'white',
+              color: '#4b5563',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.75rem',
+              transition: 'transform 0.2s',
+            }}
+            onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+            onMouseUp={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <Home size={24} />
+            {t('backToHome')}
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );

@@ -1,7 +1,8 @@
 import React from 'react';
 import { 
   Dog, Bird, Apple, Fish, Smile, Car, Heart, Sun, Cloud, Star, 
-  Ghost, Moon, Flower, Pizza, Coffee, Zap, Anchor, Bell, Bike, Camera 
+  Ghost, Moon, Flower, Pizza, Coffee, Zap, Anchor, Bell, Bike, Camera,
+  Cpu, Radio, Battery, Lightbulb, ToggleLeft, Activity, Wifi, Bluetooth
 } from 'lucide-react';
 
 export interface Lesson {
@@ -25,6 +26,11 @@ export const WORD_MODULE: Record<LevelType, Lesson[]> = {
     { id: 'w1-8', target: 'BOOK' },
     { id: 'w1-9', target: 'BALL' },
     { id: 'w1-10', target: 'CAKE' },
+    { id: 'w1-11', target: 'TREE' },
+    { id: 'w1-12', target: 'FROG' },
+    { id: 'w1-13', target: 'DUCK' },
+    { id: 'w1-14', target: 'SHIP' },
+    { id: 'w1-15', target: 'FIRE' },
   ],
   2: [
     { id: 'w2-1', target: 'HELLO' },
@@ -37,6 +43,11 @@ export const WORD_MODULE: Record<LevelType, Lesson[]> = {
     { id: 'w2-8', target: 'BREAD' },
     { id: 'w2-9', target: 'FRUIT' },
     { id: 'w2-10', target: 'CANDY' },
+    { id: 'w2-11', target: 'TABLE' },
+    { id: 'w2-12', target: 'CHAIR' },
+    { id: 'w2-13', target: 'SHIRT' },
+    { id: 'w2-14', target: 'PIZZA' },
+    { id: 'w2-15', target: 'CLOUD' },
   ],
   3: [
     { id: 'w3-1', target: 'RAINBOW' },
@@ -49,6 +60,11 @@ export const WORD_MODULE: Record<LevelType, Lesson[]> = {
     { id: 'w3-8', target: 'FRIENDS' },
     { id: 'w3-9', target: 'BIRTHDAY' },
     { id: 'w3-10', target: 'SUNFLOWER' },
+    { id: 'w3-11', target: 'DINOSAUR' },
+    { id: 'w3-12', target: 'BUTTERFLY' },
+    { id: 'w3-13', target: 'ASTRONAUT' },
+    { id: 'w3-14', target: 'LIBRARY' },
+    { id: 'w3-15', target: 'ADVENTURE' },
   ],
 };
 
@@ -128,6 +144,45 @@ export const VISUAL_MODULE: Record<LevelType, Lesson[]> = {
     { id: 'v3-8', target: 'BICYCLE', icon: <Bike size={60} /> },
     { id: 'v3-9', target: 'DESSERT', icon: <Pizza size={60} /> },
     { id: 'v3-10', target: 'MORNING', icon: <Sun size={60} /> },
+  ],
+};
+
+export const ELECTRONICS_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'e1-1', target: 'LED', icon: <Lightbulb size={60} /> },
+    { id: 'e1-2', target: 'WIRE', icon: <Activity size={60} /> },
+    { id: 'e1-3', target: 'BATTERY', icon: <Battery size={60} /> },
+    { id: 'e1-4', target: 'SWITCH', icon: <ToggleLeft size={60} /> },
+    { id: 'e1-5', target: 'RESISTOR', icon: <Activity size={60} /> },
+    { id: 'e1-6', target: 'SENSOR', icon: <Radio size={60} /> },
+    { id: 'e1-7', target: 'MOTOR', icon: <Cpu size={60} /> },
+    { id: 'e1-8', target: 'DIODE', icon: <Zap size={60} /> },
+    { id: 'e1-9', target: 'CHIP', icon: <Cpu size={60} /> },
+    { id: 'e1-10', target: 'GROUND', icon: <Activity size={60} /> },
+  ],
+  2: [
+    { id: 'e2-1', target: 'ESP32', icon: <Cpu size={60} /> },
+    { id: 'e2-2', target: 'WIFI', icon: <Wifi size={60} /> },
+    { id: 'e2-3', target: 'BLE', icon: <Bluetooth size={60} /> },
+    { id: 'e2-4', target: 'UART', icon: <Activity size={60} /> },
+    { id: 'e2-5', target: 'I2C', icon: <Cpu size={60} /> },
+    { id: 'e2-6', target: 'OLED', icon: <Camera size={60} /> },
+    { id: 'e2-7', target: 'RELAY', icon: <ToggleLeft size={60} /> },
+    { id: 'e2-8', target: 'SERIAL', icon: <Activity size={60} /> },
+    { id: 'e2-9', target: 'MODULE', icon: <Cpu size={60} /> },
+    { id: 'e2-10', target: 'ANTENNA', icon: <Radio size={60} /> },
+  ],
+  3: [
+    { id: 'e3-1', target: 'GPIO2', displayHint: 'ESP32 Internal LED Pin?' },
+    { id: 'e3-2', target: 'VCC', displayHint: '3.3V or 5V Power Pin?' },
+    { id: 'e3-3', target: 'GND', displayHint: 'Common Return Path?' },
+    { id: 'e3-4', target: 'PWM', displayHint: 'Dimming LEDs Technique?' },
+    { id: 'e3-5', target: 'BLINK', displayHint: 'The "Hello World" of Hardware?' },
+    { id: 'e3-6', target: 'ADC', displayHint: 'Reading Analog Sensors?' },
+    { id: 'e3-7', target: 'DAC', displayHint: 'Digital to Analog Converter?' },
+    { id: 'e3-8', target: 'INPUT', displayHint: 'Button Pin Mode?' },
+    { id: 'e3-9', target: 'OUTPUT', displayHint: 'LED Pin Mode?' },
+    { id: 'e3-10', target: 'HIGH', displayHint: 'Setting Pin to 3.3V?' },
   ],
 };
 
