@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { haptic } from '../utils/haptics';
+import { audio } from '../utils/audio';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import type { LevelType } from '../data/lessons';
@@ -57,12 +58,14 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSele
 
   const handleModuleSelect = (modId: ModuleType) => {
     haptic.success();
+    audio.play('select');
     setTempModule(modId);
   };
 
   const handleLevelSelect = (level: LevelType) => {
     if (tempModule) {
       haptic.success();
+      audio.play('select');
       onSelect(tempModule, level);
     }
   };
@@ -94,7 +97,10 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, onSele
         <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          onClick={() => setTempModule(null)}
+          onClick={() => {
+            audio.play('switch');
+            setTempModule(null);
+          }}
           style={{
             position: 'absolute',
             top: '1rem',

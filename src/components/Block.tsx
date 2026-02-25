@@ -3,6 +3,7 @@ import type { Variants } from 'framer-motion';
 import { SPRING_SNAPPY } from '../constants/animations';
 import { useEffect } from 'react';
 import { haptic } from '../utils/haptics';
+import { audio } from '../utils/audio';
 
 export interface BlockType {
   id: string;
@@ -17,11 +18,20 @@ interface BlockProps {
   onDrop: (blockId: string, x: number, y: number) => boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
   disabled?: boolean;
+  isHinted?: boolean;
   onDragStart?: () => void;
   onDragEnd?: () => void;
 }
 
-export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disabled, onDragStart, onDragEnd }) => {
+export const Block: React.FC<BlockProps> = ({ 
+  block, 
+  onDrop, 
+  containerRef, 
+  disabled, 
+  isHinted,
+  onDragStart, 
+  onDragEnd 
+}) => {
   const controls = useAnimationControls();
   
   // Motion values for dynamic tilt
@@ -39,6 +49,7 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
     if (disabled) return;
     controls.set("dragging");
     haptic.light();
+    audio.play('pickup', 0.3);
     onDragStart?.();
   };
 
@@ -50,11 +61,9 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
     // Reset motion value
     x.set(0);
     
-    // ONLY return to "idle" if it was NOT placed.
-    // If it was placed, we want it to stay exactly where the user dropped it
-    // while the AnimatePresence exit animation handles its disappearance.
     if (!isPlaced) {
-      controls.start("idle");
+      haptic.error();
+      controls.start("wobble");
     }
   };
 
@@ -67,6 +76,10 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
       y: 0,
       boxShadow: "0px 4px 0px rgba(0,0,0,0.2)",
       transition: SPRING_SNAPPY
+    },
+    wobble: {
+      x: [0, -10, 10, -10, 10, 0],
+      transition: { duration: 0.4 }
     },
     hover: {
       scale: 1.1,
@@ -108,9 +121,10 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
         userSelect: 'none',
         position: 'relative',
         willChange: "transform",
-        border: '3px solid rgba(255,255,255,0.3)',
+        border: isHinted ? '4px solid #fbbf24' : '3px solid rgba(255,255,255,0.3)',
         rotate: disabled ? 0 : smoothRotate, // Dynamic tilt
-        x // Bind to motion value
+        x, // Bind to motion value
+        boxShadow: isHinted ? '0 0 15px #fbbf24' : '0px 4px 0px rgba(0,0,0,0.2)'
       }}
       animate={disabled ? "disabled" : controls}
       whileHover={disabled ? {} : "hover"}
@@ -130,8 +144,21 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
         zIndex: 10000,
         cursor: 'grabbing'
       }} 
-      className="letter-block"
+      className={`letter-block ${isHinted ? 'hinted' : ''}`}
     >
+      {isHinted && (
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          style={{
+            position: 'absolute',
+            inset: -8,
+            borderRadius: 16,
+            border: '4px solid #fbbf24',
+            pointerEvents: 'none'
+          }}
+        />
+      )}
       <span style={{ zIndex: 2 }}>{block.char}</span>
       <div
         className="block-stud"
@@ -149,3 +176,4 @@ export const Block: React.FC<BlockProps> = ({ block, onDrop, containerRef, disab
     </motion.div>
   );
 };
+

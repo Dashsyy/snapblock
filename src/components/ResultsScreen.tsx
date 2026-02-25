@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Trophy, RotateCcw, Clock, Star } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { audio } from '../utils/audio';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface ResultsScreenProps {
@@ -13,6 +15,11 @@ interface ResultsScreenProps {
 
 export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, totalTime, onRestart }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    audio.play('module_complete');
+  }, []);
+
   const minutes = Math.floor(totalTime / 60);
   const seconds = totalTime % 60;
 
@@ -139,7 +146,10 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
         </div>
 
         <button
-          onClick={onRestart}
+          onClick={() => {
+            audio.play('select');
+            onRestart();
+          }}
           style={{
             width: '100%',
             padding: '1rem',

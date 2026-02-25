@@ -7,11 +7,12 @@ interface TrayProps {
   blocks: BlockType[];
   handleDrop: (id: string, x: number, y: number) => boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
+  hintBlockId?: string | null;
   onDragStart?: () => void;
   onDragEnd?: () => void;
 }
 
-export const Tray: React.FC<TrayProps> = ({ blocks, handleDrop, containerRef, onDragStart, onDragEnd }) => {
+export const Tray: React.FC<TrayProps> = ({ blocks, handleDrop, containerRef, hintBlockId, onDragStart, onDragEnd }) => {
   return (
     <div
       className="tray-container"
@@ -62,6 +63,7 @@ export const Tray: React.FC<TrayProps> = ({ blocks, handleDrop, containerRef, on
                       block={block}
                       onDrop={handleDrop}
                       containerRef={containerRef}
+                      isHinted={block.id === hintBlockId}
                       onDragStart={onDragStart}
                       onDragEnd={onDragEnd}
                     />

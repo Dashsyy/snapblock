@@ -2,12 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { audio } from '../utils/audio';
 
 export const LanguageSwitcher: React.FC = () => {
   const { i18n } = useTranslation();
 
   const toggleLanguage = () => {
     const nextLng = i18n.language.startsWith('km') ? 'en' : 'km';
+    audio.play('switch');
     i18n.changeLanguage(nextLng);
   };
 

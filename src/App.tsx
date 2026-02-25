@@ -40,6 +40,7 @@ function App() {
     targetWord,
     slotRefs,
     handleDrop,
+    handleKeyPress,
     clearLesson,
     resetGame,
     setScore,
@@ -48,10 +49,19 @@ function App() {
     setCurrentLessonIdx,
     isDragging,
     setIsDragging,
+    hintBlockId,
     totalLessons
   } = useGameLogic(userName, selectedModule, selectedLevel);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      handleKeyPress(e.key);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [handleKeyPress]);
 
   const updateSlotRects = useCallback(() => {
     Object.keys(slotRefs.current).forEach(key => {
@@ -248,6 +258,7 @@ function App() {
         blocks={blocks} 
         handleDrop={handleDrop} 
         containerRef={containerRef} 
+        hintBlockId={hintBlockId}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
       />

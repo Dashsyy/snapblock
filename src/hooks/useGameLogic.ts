@@ -4,12 +4,17 @@ import type { ModuleType } from '../components/ModuleSelector';
 import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE } from '../data/lessons';
 import type { LevelType, Lesson } from '../data/lessons';
 import { haptic } from '../utils/haptics';
+import { audio } from '../utils/audio';
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
 
 export const useGameLogic = (userName: string | null, selectedModule: ModuleType | null, selectedLevel: LevelType | null) => {
   const [currentLessonIdx, setCurrentLessonIdx] = useState(0);
   const [moduleLessons, setModuleLessons] = useState<Lesson[]>([]);
+  
+  const currentLesson = moduleLessons[currentLessonIdx];
+  const targetWord = currentLesson?.target || "";
+
   const [blocks, setBlocks] = useState<BlockType[]>([]);
   const [filledSlots, setFilledSlots] = useState<boolean[]>([]);
   const [placedChars, setPlacedChars] = useState<(string | null)[]>([]);
@@ -19,9 +24,35 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   const [isModuleFinished, setIsModuleFinished] = useState(false);
   const [showLessonSuccess, setShowLessonSuccess] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  
-  const currentLesson = moduleLessons[currentLessonIdx];
-  const targetWord = currentLesson?.target || "";
+  const [hintBlockId, setHintBlockId] = useState<string | null>(null);
+  const hintTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetHintTimeout = useCallback(() => {
+    if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
+    setHintBlockId(null);
+    
+    hintTimeoutRef.current = setTimeout(() => {
+      // Find the first empty slot
+      const firstEmptyIdx = filledSlots.findIndex(s => !s);
+      if (firstEmptyIdx !== -1 && targetWord) {
+        const neededChar = targetWord[firstEmptyIdx];
+        // Find a block in the tray that has this char and is not placed
+        const availableBlock = blocks.find(b => b.char === neededChar && !b.isPlaced);
+        if (availableBlock) {
+          setHintBlockId(availableBlock.id);
+        }
+      }
+    }, 10000); // 10 seconds hint
+  }, [filledSlots, targetWord, blocks]);
+
+  useEffect(() => {
+    if (!isModuleFinished && !showLessonSuccess) {
+      resetHintTimeout();
+    }
+    return () => {
+      if (hintTimeoutRef.current) clearTimeout(hintTimeoutRef.current);
+    };
+  }, [resetHintTimeout, isModuleFinished, showLessonSuccess, currentLessonIdx]);
   
   const [lessonTimer, setLessonTimer] = useState(15);
   const [initialLessonTimer, setInitialLessonTimer] = useState(15);
@@ -125,6 +156,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     setSuccessMessage(randomMessage);
     setShowLessonSuccess(true);
     haptic.double();
+    audio.play('lesson_success');
     
     setTimeout(() => {
       if (currentLessonIdx < moduleLessons.length - 1) {
@@ -155,10 +187,16 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
 
       if (isInside) {
         const isCorrect = block.char === targetWord[i];
+        resetHintTimeout();
         
         if (selectedModule === 'MATH' || isCorrect) {
-          if (isCorrect) haptic.success();
-          else if (selectedModule === 'MATH') haptic.error();
+          if (isCorrect) {
+            haptic.success();
+            audio.play('snap_correct');
+          } else if (selectedModule === 'MATH') {
+            haptic.error();
+            audio.play('wobble_error');
+          }
 
           setPlacedChars(prev => {
             const next = [...prev];
@@ -195,12 +233,68 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     return false;
   }, [targetWord, blocks, filledSlots, selectedModule, handleLessonComplete]);
 
+  const handleKeyPress = useCallback((key: string) => {
+    if (!targetWord || isModuleFinished || showLessonSuccess) return;
+    
+    const pressedChar = key.toUpperCase();
+    
+    // Find the first empty slot and check if it matches the pressed key
+    const firstEmptyIdx = filledSlots.findIndex(s => !s);
+    if (firstEmptyIdx !== -1) {
+      const correctChar = targetWord[firstEmptyIdx];
+      
+      if (pressedChar === correctChar) {
+        // Find the block in tray to "place" it
+        const availableBlock = blocks.find(b => b.char === pressedChar && !b.isPlaced);
+        if (availableBlock) {
+          haptic.success();
+          audio.play('snap_correct');
+          resetHintTimeout();
+          
+          setPlacedChars(prev => {
+            const next = [...prev];
+            next[firstEmptyIdx] = pressedChar;
+            return next;
+          });
+
+          setFilledSlots(prev => {
+            const next = [...prev];
+            next[firstEmptyIdx] = true;
+            return next;
+          });
+
+          setBlocks(prev => prev.map(b => 
+            b.id === availableBlock.id ? { ...b, isPlaced: true } : b
+          ));
+
+          setTimeout(() => {
+            setPlacedChars(currentPlaced => {
+              const allCorrect = currentPlaced.every((char, idx) => char === targetWord[idx]);
+              const allFilled = currentPlaced.every(char => char !== null);
+              if (allFilled && allCorrect) {
+                handleLessonComplete();
+              }
+              return currentPlaced;
+            });
+          }, 0);
+        }
+      } else if (/^[A-Z0-9]$/.test(pressedChar)) {
+        // Only trigger error if it's a valid character but wrong
+        haptic.error();
+        audio.play('wobble_error');
+        resetHintTimeout();
+      }
+    }
+  }, [targetWord, isModuleFinished, showLessonSuccess, filledSlots, blocks, resetHintTimeout, handleLessonComplete]);
+
   const clearLesson = useCallback(() => {
     if (!targetWord) return;
+    resetHintTimeout();
+    audio.play('clear');
     setFilledSlots(new Array(targetWord.length).fill(false));
     setPlacedChars(new Array(targetWord.length).fill(null));
     setBlocks(prev => prev.map(b => ({ ...b, isPlaced: false })));
-  }, [targetWord]);
+  }, [targetWord, resetHintTimeout]);
 
   const resetGame = useCallback(() => {
     if (selectedModule && selectedLevel) {
@@ -233,6 +327,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     targetWord,
     slotRefs,
     handleDrop,
+    handleKeyPress,
     clearLesson,
     resetGame,
     setScore,
@@ -241,6 +336,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
     setCurrentLessonIdx,
     isDragging,
     setIsDragging,
+    hintBlockId,
     totalLessons: moduleLessons.length
   };
 };

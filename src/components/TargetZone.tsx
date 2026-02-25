@@ -40,18 +40,24 @@ const Slot: React.FC<SlotProps> = ({ correctChar, placedChar, isFilled, onMount,
       {isFilled && (
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ ...SPRING_SNAPPY, duration: 0.2 }}
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: 1,
+            backgroundColor: isCorrect ? ['#10b981', '#34d399', '#10b981'] : isWrong ? '#ef4444' : '#3b82f6'
+          }}
+          transition={{ 
+            scale: { duration: 0.3, times: [0, 0.5, 1] },
+            backgroundColor: { duration: 0.5 }
+          }}
           className="filled-block"
           style={{
             borderRadius: 10,
-            backgroundColor: isCorrect ? '#10b981' : isWrong ? '#ef4444' : '#3b82f6',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'white',
             fontWeight: '900',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            boxShadow: '0 8px 15px rgba(0,0,0,0.15)',
             position: 'relative'
           }}
         >
