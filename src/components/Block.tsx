@@ -4,6 +4,7 @@ import { SPRING_SNAPPY } from '../constants/animations';
 import { useEffect } from 'react';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
+import { useTranslation } from 'react-i18next';
 
 export interface BlockType {
   id: string;
@@ -33,6 +34,7 @@ export const Block: React.FC<BlockProps> = ({
   onDragEnd 
 }) => {
   const controls = useAnimationControls();
+  const { i18n } = useTranslation();
   
   // Motion values for dynamic tilt
   const x = useMotionValue(0);
@@ -45,11 +47,20 @@ export const Block: React.FC<BlockProps> = ({
     }
   }, [controls, disabled, block.isPlaced]);
 
+  const speak = (text: string) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = i18n.language === 'km' ? 'km-KH' : 'en-US';
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+  };
+
   const handleDragStart = () => {
     if (disabled) return;
     controls.set("dragging");
     haptic.light();
     audio.play('pickup', 0.3);
+    speak(block.char);
     onDragStart?.();
   };
 
@@ -63,6 +74,9 @@ export const Block: React.FC<BlockProps> = ({
     
     if (!isPlaced) {
       haptic.error();
+      audio.play('wobble_error', 0.4);
+      // Force return to center of slot
+      controls.start("idle");
       controls.start("wobble");
     }
   };
@@ -75,7 +89,11 @@ export const Block: React.FC<BlockProps> = ({
       x: 0,
       y: 0,
       boxShadow: "0px 4px 0px rgba(0,0,0,0.2)",
-      transition: SPRING_SNAPPY
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 30
+      }
     },
     wobble: {
       x: [0, -10, 10, -10, 10, 0],
@@ -119,6 +137,7 @@ export const Block: React.FC<BlockProps> = ({
         fontWeight: '900',
         cursor: disabled ? 'default' : 'grab',
         userSelect: 'none',
+        touchAction: 'none',
         position: 'relative',
         willChange: "transform",
         border: isHinted ? '4px solid #fbbf24' : '3px solid rgba(255,255,255,0.3)',
@@ -132,11 +151,7 @@ export const Block: React.FC<BlockProps> = ({
       drag={!disabled}
       dragConstraints={containerRef}
       dragElastic={0.05}
-      dragMomentum={true}
-      dragTransition={{
-        power: 0.2, // Increased power for better inertia feel
-        timeConstant: 200
-      }}
+      dragMomentum={false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       variants={variants}

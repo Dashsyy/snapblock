@@ -217,7 +217,7 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
             audio.play('snap_correct');
           } else if (selectedModule === 'MATH') {
             haptic.error();
-            audio.play('wobble_error');
+            // Sound is now handled by Block.tsx for drops
           }
 
           setPlacedChars(prev => {
