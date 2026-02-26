@@ -1,6 +1,6 @@
 /**
  * Audio Utility for SnapBlocks
- * Handles pre-loading and playing sound effects with safe fallbacks.
+ * Handles pre-loading and playing sound effects with Web Audio API for low latency.
  */
 
 type SoundName = 
@@ -17,17 +17,28 @@ type SoundName =
   | 'clear';
 
 class AudioManager {
-  private sounds: Map<SoundName, HTMLAudioElement> = new Map();
+  private context: AudioContext | null = null;
+  private buffers: Map<SoundName, AudioBuffer> = new Map();
   private enabled: boolean = true;
+  private isLoaded: boolean = false;
 
   constructor() {
-    // Only initialize in browser
-    if (typeof window !== 'undefined') {
-      this.preloadSounds();
+    // Context is created on first user interaction to satisfy browser policies
+  }
+
+  private initContext() {
+    if (!this.context) {
+      this.context = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (this.context.state === 'suspended') {
+      this.context.resume();
     }
   }
 
-  private preloadSounds() {
+  public async preloadSounds(): Promise<void> {
+    if (this.isLoaded) return;
+    
+    this.initContext();
     const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
     const soundFiles: Record<SoundName, string> = {
       pickup: `${baseUrl}/sfx/pickup.wav`,
@@ -43,37 +54,41 @@ class AudioManager {
       clear: `${baseUrl}/sfx/clear.wav`,
     };
 
-    (Object.entries(soundFiles) as [SoundName, string][]).forEach(([name, path]) => {
-      const audio = new Audio();
-      audio.src = path;
-      audio.preload = 'auto';
-      // Load the audio to memory
-      audio.load();
-      this.sounds.set(name, audio);
+    const loadPromises = (Object.entries(soundFiles) as [SoundName, string][]).map(async ([name, path]) => {
+      try {
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await this.context!.decodeAudioData(arrayBuffer);
+        this.buffers.set(name, audioBuffer);
+      } catch (e) {
+        console.error(`Failed to load sound: ${name}`, e);
+      }
     });
+
+    await Promise.all(loadPromises);
+    this.isLoaded = true;
+    console.log("All sounds loaded and decoded.");
   }
 
   public play(name: SoundName, volume: number = 0.5) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this.context || !this.isLoaded) {
+      // Fallback for immediate play if not loaded (though we should wait)
+      return;
+    }
 
-    const sound = this.sounds.get(name);
-    if (sound) {
-      try {
-        // Create a clone to allow overlapping sounds of the same type
-        const playSound = sound.cloneNode() as HTMLAudioElement;
-        playSound.volume = volume;
-        
-        const playPromise = playSound.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.warn(`Audio playback failed for ${name}:`, error);
-            // If it failed, try to unlock (though this is only effective during direct user interaction)
-            this.unlock();
-          });
-        }
-      } catch (e) {
-        console.error(`Error playing sound ${name}:`, e);
-      }
+    this.initContext();
+    const buffer = this.buffers.get(name);
+    if (buffer) {
+      const source = this.context.createBufferSource();
+      source.buffer = buffer;
+      
+      const gainNode = this.context.createGain();
+      gainNode.gain.value = volume;
+      
+      source.connect(gainNode);
+      gainNode.connect(this.context.destination);
+      
+      source.start(0);
     }
   }
 
@@ -81,20 +96,9 @@ class AudioManager {
     this.enabled = enabled;
   }
 
-  /**
-   * Unlocks audio on mobile browsers.
-   * Call this during a user interaction (like a button click).
-   */
-  public unlock() {
-    const silentAudio = new Audio();
-    silentAudio.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
-    silentAudio.play().catch(() => {});
-    
-    // Resume audio context if it exists (for Web Audio API, though we use HTMLAudioElement)
-    // This is just a safety measure for some browsers
-    this.sounds.forEach(sound => {
-      sound.load();
-    });
+  public async unlock() {
+    this.initContext();
+    await this.preloadSounds();
   }
 }
 
