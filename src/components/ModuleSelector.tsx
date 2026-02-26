@@ -133,27 +133,45 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
         </motion.button>
       )}
 
-      {/* Soulful Background Elements */}
+      {/* Optimized Background Elements */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
         <motion.div
           animate={{
-            scale: [1, 1.2, 1],
             rotate: [0, 90, 0],
-            x: [0, 50, 0],
-            y: [0, 30, 0]
+            x: [0, 20, 0],
+            y: [0, 15, 0]
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          style={{ position: 'absolute', top: '-10%', left: '-10%', width: '40vw', height: '40vw', borderRadius: '40%', background: 'rgba(59, 130, 246, 0.03)', filter: 'blur(60px)' }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          style={{ 
+            position: 'absolute', 
+            top: '-10%', 
+            left: '-10%', 
+            width: '40vw', 
+            height: '40vw', 
+            borderRadius: '40%', 
+            background: 'rgba(59, 130, 246, 0.03)', 
+            filter: 'blur(40px)',
+            willChange: 'transform'
+          }}
         />
         <motion.div
           animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, -120, 0],
-            x: [0, -40, 0],
-            y: [0, 60, 0]
+            rotate: [0, -90, 0],
+            x: [0, -20, 0],
+            y: [0, 20, 0]
           }}
-          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          style={{ position: 'absolute', bottom: '-10%', right: '-10%', width: '50vw', height: '50vw', borderRadius: '35%', background: 'rgba(16, 185, 129, 0.03)', filter: 'blur(80px)' }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          style={{ 
+            position: 'absolute', 
+            bottom: '-10%', 
+            right: '-10%', 
+            width: '50vw', 
+            height: '50vw', 
+            borderRadius: '35%', 
+            background: 'rgba(16, 185, 129, 0.03)', 
+            filter: 'blur(50px)',
+            willChange: 'transform'
+          }}
         />
       </div>
 
@@ -223,7 +241,8 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                     boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.1)',
                     border: `1px solid rgba(0,0,0,0.05)`,
                     position: 'relative',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    willChange: 'transform'
                   }}
                 >
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '100px', height: '100px', background: `radial-gradient(circle at top right, ${mod.accent}, transparent 70%)`, opacity: 0.5 }} />

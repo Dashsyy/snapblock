@@ -53,17 +53,37 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
         <LanguageSwitcher />
       </div>
 
-      {/* Background elements reused from App/Results */}
+      {/* Background elements optimized for mobile performance */}
       <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
         <motion.div 
-          animate={{ x: [0, 40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', top: '15%', left: '10%', width: 'min(350px, 80vw)', height: 'min(350px, 80vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%)', filter: 'blur(40px)' }}
+          animate={{ x: [0, 20, 0], y: [0, 15, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          style={{ 
+            position: 'absolute', 
+            top: '15%', 
+            left: '10%', 
+            width: 'min(300px, 70vw)', 
+            height: 'min(300px, 70vw)', 
+            borderRadius: '50%', 
+            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%)', 
+            filter: 'blur(30px)',
+            willChange: 'transform'
+          }}
         />
         <motion.div 
-          animate={{ x: [0, -50, 0], y: [0, 40, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          style={{ position: 'absolute', bottom: '10%', right: '15%', width: 'min(450px, 90vw)', height: 'min(450px, 90vw)', borderRadius: '50%', background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%)', filter: 'blur(50px)' }}
+          animate={{ x: [0, -25, 0], y: [0, 20, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          style={{ 
+            position: 'absolute', 
+            bottom: '10%', 
+            right: '15%', 
+            width: 'min(400px, 80vw)', 
+            height: 'min(400px, 80vw)', 
+            borderRadius: '50%', 
+            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)', 
+            filter: 'blur(40px)',
+            willChange: 'transform'
+          }}
         />
       </div>
 
