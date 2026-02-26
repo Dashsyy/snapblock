@@ -30,7 +30,7 @@ function App() {
     if (isLoading) {
       interval = setInterval(() => {
         setLoadingMsgIdx(prev => (prev + 1) % loadingMessages.length);
-      }, 300) as any;
+      }, 800) as any;
     }
     return () => clearInterval(interval);
   }, [isLoading]);
