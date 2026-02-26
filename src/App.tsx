@@ -14,6 +14,26 @@ function App() {
   const [selectedLevel, setSelectedLevel] = useState<LevelType | null>(null);
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMsgIdx, setLoadingMsgIdx] = useState(0);
+
+  const loadingMessages = [
+    "Preparing Fun...",
+    "Shuffling Blocks...",
+    "Sharpening Pencils...",
+    "Loading Magic...",
+    "Getting Ready..."
+  ];
+
+  // Rotate loading messages
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+    if (isLoading) {
+      interval = setInterval(() => {
+        setLoadingMsgIdx(prev => (prev + 1) % loadingMessages.length);
+      }, 300) as any;
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   // Load progress from localStorage
   useEffect(() => {
@@ -39,8 +59,8 @@ function App() {
     setUserName(name);
     // Ensure sounds are loaded before showing the next screen
     await audio.unlock();
-    // Small delay for the loading feel
-    setTimeout(() => setIsLoading(false), 800);
+    // Small delay for the loading feel so they can see the messages
+    setTimeout(() => setIsLoading(false), 1500);
   };
 
   const handleBackToModules = () => {
@@ -85,7 +105,18 @@ function App() {
           >
             <Sparkles size={60} />
           </motion.div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1f2937' }}>Preparing Fun...</h2>
+          <AnimatePresence mode="wait">
+            <motion.h2 
+              key={loadingMsgIdx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1f2937', minHeight: '2rem' }}
+            >
+              {loadingMessages[loadingMsgIdx]}
+            </motion.h2>
+          </AnimatePresence>
         </motion.div>
       ) : !selectedModule || !selectedLevel ? (
         <ModuleSelector 
