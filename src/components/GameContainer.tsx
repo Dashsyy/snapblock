@@ -219,7 +219,7 @@ export const GameContainer: React.FC<GameContainerProps> = ({
                 left: '50%',
                 backgroundColor: 'rgba(255,255,255,0.95)',
                 padding: '1.5rem 2rem',
-                borderRadius: '2rem',
+                borderRadius: '1.25rem',
                 boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
                 zIndex: 1000,
                 textAlign: 'center',

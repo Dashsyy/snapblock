@@ -102,7 +102,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
         style={{
           backgroundColor: 'white',
           padding: 'clamp(1.5rem, 5vh, 3rem)',
-          borderRadius: '3rem',
+          borderRadius: '1.25rem',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
           maxWidth: '500px',
           width: '100%',
@@ -127,7 +127,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
               backgroundColor: grade.color,
               color: 'white',
               padding: '0.5rem 1.5rem',
-              borderRadius: '2rem',
+              borderRadius: '1rem',
               fontWeight: '900',
               fontSize: '0.8rem',
               display: 'inline-block',
@@ -147,7 +147,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
+          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1rem', border: '2px solid #f1f5f9' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#64748b', marginBottom: '0.25rem' }}>
               <Star size={16} fill="#64748b" />
               <span style={{ fontWeight: 'bold', fontSize: '0.7rem' }}>{t('score')}</span>
@@ -155,7 +155,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
             <div style={{ fontSize: '1.8rem', fontWeight: 900, color: '#1e293b' }}>{score}</div>
           </div>
 
-          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1.5rem', border: '2px solid #f1f5f9' }}>
+          <div style={{ backgroundColor: '#f8fafc', padding: '1rem', borderRadius: '1.25rem', border: '2px solid #f1f5f9' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', color: '#64748b', marginBottom: '0.25rem' }}>
               <Clock size={16} />
               <span style={{ fontWeight: 'bold', fontSize: '0.7rem' }}>{t('time')}</span>
@@ -175,7 +175,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
             style={{
               width: '100%',
               padding: '1rem',
-              borderRadius: '1.5rem',
+              borderRadius: '1rem',
               border: 'none',
               backgroundColor: '#1f2937',
               color: 'white',
@@ -204,7 +204,7 @@ export const ResultsScreen: React.FC<ResultsScreenProps> = ({ userName, score, t
             style={{
               width: '100%',
               padding: '1rem',
-              borderRadius: '1.5rem',
+              borderRadius: '1rem',
               border: '2px solid #e2e8f0',
               backgroundColor: 'white',
               color: '#4b5563',

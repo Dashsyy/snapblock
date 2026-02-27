@@ -232,7 +232,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                     minWidth: 'min(280px, 80vw)',
                     flex: '0 0 auto',
                     padding: 'clamp(1.5rem, 5vh, 2.5rem) 1.5rem',
-                    borderRadius: '2.5rem',
+                    borderRadius: '1.5rem',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
@@ -254,7 +254,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                       padding: 'clamp(1rem, 3vh, 1.75rem)',
                       backgroundColor: mod.bg,
                       color: mod.color,
-                      borderRadius: '2rem',
+                      borderRadius: '1.25rem',
                       marginBottom: 'clamp(1rem, 3vh, 2rem)',
                       boxShadow: `0 10px 20px ${mod.color}20`
                     }}
@@ -275,7 +275,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                       fontWeight: 'bold',
                       backgroundColor: mod.color,
                       padding: 'clamp(0.6rem, 2vh, 0.8rem) clamp(1.5rem, 4vw, 2rem)',
-                      borderRadius: '1.25rem',
+                      borderRadius: '1rem',
                       boxShadow: `0 8px 15px ${mod.color}40`,
                       marginTop: 'auto'
                     }}
@@ -333,7 +333,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                     style={{
                       backgroundColor: 'white',
                       padding: '1.25rem',
-                      borderRadius: '2rem',
+                      borderRadius: '1.25rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
@@ -347,7 +347,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                       padding: '1rem',
                       backgroundColor: level.bg,
                       color: level.color,
-                      borderRadius: '1.5rem',
+                      borderRadius: '1rem',
                     }}>
                       {level.icon}
                     </div>

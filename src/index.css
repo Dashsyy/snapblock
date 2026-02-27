@@ -78,6 +78,7 @@ body {
 .tray-slot {
   width: 50px;
   height: 50px;
+  border-radius: 8px;
 }
 
 /* Block Component Responsive Sizing */
@@ -85,10 +86,7 @@ body {
   width: 46px;
   height: 46px;
   font-size: 1.3rem;
-}
-.block-stud {
-  width: 16px;
-  height: 6px;
+  border-radius: 8px;
 }
 
 /* Medium Mobile (≥ 360px) */
@@ -97,24 +95,24 @@ body {
     width: 60px;
     height: 60px;
     font-size: 1.8rem;
+    border-radius: 12px;
   }
   .filled-block {
     width: 50px;
     height: 50px;
     font-size: 1.5rem;
+    border-radius: 10px;
   }
   .tray-slot {
     width: 60px;
     height: 60px;
+    border-radius: 10px;
   }
   .letter-block {
     width: 55px;
     height: 55px;
     font-size: 1.5rem;
-  }
-  .block-stud {
-    width: 20px;
-    height: 8px;
+    border-radius: 10px;
   }
 }
 
@@ -124,24 +122,24 @@ body {
     width: 80px;
     height: 80px;
     font-size: 2.5rem;
+    border-radius: 16px;
   }
   .filled-block {
     width: 70px;
     height: 70px;
     font-size: 2rem;
+    border-radius: 14px;
   }
   .tray-slot {
     width: 80px;
     height: 80px;
+    border-radius: 16px;
   }
   .letter-block {
     width: 70px;
     height: 70px;
     font-size: 2rem;
-  }
-  .block-stud {
-    width: 30px;
-    height: 10px;
+    border-radius: 14px;
   }
 }
 
@@ -150,6 +148,7 @@ body {
   padding: 2rem;
   width: 90%;
   max-width: 500px;
+  border-radius: 20px;
 }
 @media (min-width: 768px) {
   .results-modal {

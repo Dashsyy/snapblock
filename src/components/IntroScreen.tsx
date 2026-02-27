@@ -97,7 +97,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
           style={{
             backgroundColor: 'white',
             padding: '2.5rem 1.5rem',
-            borderRadius: '3rem',
+            borderRadius: '1.25rem',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
             maxWidth: '450px',
             width: '100%',
@@ -107,7 +107,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
             border: '4px solid #f1f5f9'
           }}
         >
-          <div style={{ display: 'inline-flex', padding: '1rem', backgroundColor: '#eff6ff', borderRadius: '2rem', marginBottom: '1.5rem', color: '#3b82f6' }}>
+          <div style={{ display: 'inline-flex', padding: '1rem', backgroundColor: '#eff6ff', borderRadius: '1rem', marginBottom: '1.5rem', color: '#3b82f6' }}>
             <Sparkles size={40} />
           </div>
           
@@ -144,7 +144,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
                 style={{
                   width: '100%',
                   padding: '1.2rem',
-                  borderRadius: '1.5rem',
+                  borderRadius: '1rem',
                   border: '2px solid #e2e8f0',
                   fontSize: '1.1rem',
                   outline: 'none',
@@ -162,7 +162,7 @@ export const IntroScreen: React.FC<IntroScreenProps> = ({ onStart }) => {
               style={{
                 width: '100%',
                 padding: '1.2rem',
-                borderRadius: '1.5rem',
+                borderRadius: '1rem',
                 border: 'none',
                 backgroundColor: name.trim() ? '#3b82f6' : '#94a3b8',
                 color: 'white',
