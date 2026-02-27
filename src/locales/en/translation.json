@@ -44,18 +44,21 @@
     "WORD": "Spelling",
     "MATH": "Math Fun",
     "VISUAL": "See & Spell",
-    "ELECTRONICS": "Electronics"
+    "ELECTRONICS": "Electronics",
+    "SEARCH": "Word Search"
   },
   "moduleDesc": {
     "WORD": "Master new words with fun blocks!",
     "MATH": "Count, add, and play with numbers!",
     "VISUAL": "Look at the picture and spell!",
-    "ELECTRONICS": "Learn circuits, ESP32, and hardware!"
+    "ELECTRONICS": "Learn circuits, ESP32, and hardware!",
+    "SEARCH": "Find all the hidden words!"
   },
   "heroMessages": [
     "Ready to become a spelling hero?",
     "Ready to master your math skills?",
     "Ready for some visual puzzles?",
+    "Ready to find hidden words?",
     "Ready to snap those blocks?",
     "Ready to build cool circuits?"
   ]

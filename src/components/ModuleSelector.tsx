@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2 } from 'lucide-react';
+import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2, Search } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import type { LevelType } from '../data/lessons';
 
-export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS';
+export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS' | 'SEARCH';
 
 interface ModuleSelectorProps {
   userName: string;
@@ -30,6 +30,15 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
       color: '#3b82f6',
       bg: '#eff6ff',
       accent: '#dbeafe'
+    },
+    {
+      id: 'SEARCH' as ModuleType,
+      title: t('modules.SEARCH') || 'Word Search',
+      desc: t('moduleDesc.SEARCH') || 'Find the hidden words!',
+      icon: <Search size={iconSize} />,
+      color: '#ec4899',
+      bg: '#fdf2f8',
+      accent: '#fce7f3'
     },
     {
       id: 'MATH' as ModuleType,

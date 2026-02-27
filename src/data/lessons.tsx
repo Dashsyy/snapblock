@@ -186,3 +186,21 @@ export const ELECTRONICS_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
+export const SEARCH_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 's1-1', target: 'RED,BLUE,PINK', displayHint: 'COLORS' },
+    { id: 's1-2', target: 'CAT,DOG,FISH', displayHint: 'PETS' },
+    { id: 's1-3', target: 'SUN,MOON,STAR', displayHint: 'SKY' },
+  ],
+  2: [
+    { id: 's2-1', target: 'APPLE,BANANA,GRAPE,PEAR', displayHint: 'FRUITS' },
+    { id: 's2-2', target: 'LION,TIGER,ZEBRA,BEAR', displayHint: 'WILD ANIMALS' },
+    { id: 's2-3', target: 'BEE,ANT,FLY,WASP', displayHint: 'INSECTS' },
+  ],
+  3: [
+    { id: 's3-1', target: 'MARS,VENUS,EARTH,SATURN,PLUTO', displayHint: 'PLANETS' },
+    { id: 's3-2', target: 'CAR,BIKE,SHIP,PLANE,TRAIN', displayHint: 'TRANSPORT' },
+    { id: 's3-3', target: 'SPRING,SUMMER,WINTER,AUTUMN', displayHint: 'SEASONS' },
+  ],
+};
+

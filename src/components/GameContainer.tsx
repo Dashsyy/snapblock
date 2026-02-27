@@ -13,6 +13,7 @@ import { Tray } from './Tray';
 import { ResultsScreen } from './ResultsScreen';
 import type { ModuleType } from './ModuleSelector';
 import type { LevelType } from '../data/lessons';
+import { WordSearchGame } from './WordSearchGame';
 
 interface GameContainerProps {
   userName: string;
@@ -30,6 +31,18 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   onModuleComplete
 }) => {
   const { t } = useTranslation();
+
+  if (selectedModule === 'SEARCH') {
+    return (
+      <WordSearchGame 
+        userName={userName}
+        selectedLevel={selectedLevel}
+        onBack={onBack}
+        onModuleComplete={onModuleComplete}
+      />
+    );
+  }
+
   const {
     currentLessonIdx,
     blocks,
