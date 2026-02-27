@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { BlockType } from '../components/Block';
 import type { ModuleType } from '../components/ModuleSelector';
-import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE, ELECTRONICS_MODULE } from '../data/lessons';
+import { WORD_MODULE, MATH_MODULE, VISUAL_MODULE, ELECTRONICS_MODULE, MOEYS_MODULE } from '../data/lessons';
 import type { LevelType, Lesson } from '../data/lessons';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
@@ -125,6 +125,8 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
         allLessons = VISUAL_MODULE[levelKey];
       } else if (selectedModule === 'ELECTRONICS') {
         allLessons = ELECTRONICS_MODULE[levelKey];
+      } else if (selectedModule === 'MOEYS') {
+        allLessons = MOEYS_MODULE[selectedLevel];
       } else {
         allLessons = WORD_MODULE[levelKey];
       }
@@ -329,6 +331,8 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
         allLessons = VISUAL_MODULE[levelKey];
       } else if (selectedModule === 'ELECTRONICS') {
         allLessons = ELECTRONICS_MODULE[levelKey];
+      } else if (selectedModule === 'MOEYS') {
+        allLessons = MOEYS_MODULE[selectedLevel];
       } else {
         allLessons = WORD_MODULE[levelKey];
       }

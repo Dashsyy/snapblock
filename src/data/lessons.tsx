@@ -221,3 +221,21 @@ export const SUDOKU_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
+export const MOEYS_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'moeys-1', target: 'ក', displayHint: 'Lesson 1: Consonant ក' },
+    { id: 'moeys-2', target: 'ខ', displayHint: 'Lesson 2: Consonant ខ' },
+    { id: 'moeys-3', target: 'កា', displayHint: 'Lesson 3: ក + ា' },
+    { id: 'moeys-4', target: 'ខា', displayHint: 'Lesson 4: ខ + ា' },
+    { id: 'moeys-5', target: 'គ', displayHint: 'Lesson 5: Consonant គ' },
+    { id: 'moeys-6', target: 'ឃ', displayHint: 'Lesson 6: Consonant ឃ' },
+    { id: 'moeys-7', target: 'គា', displayHint: 'Lesson 7: គ + ា' },
+    { id: 'moeys-8', target: 'ឃា', displayHint: 'Lesson 8: ឃ + ា' },
+    { id: 'moeys-9', target: 'ង', displayHint: 'Lesson 9: Consonant ង' },
+    { id: 'moeys-10', target: 'ងា', displayHint: 'Lesson 10: ង + ា' },
+  ],
+  2: [], // To be populated
+  3: [], // To be populated
+  4: [], // To be populated
+};
+

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2, Search, Grid3X3, Zap as ZapIcon } from 'lucide-react';
+import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2, Search, Grid3X3, Zap as ZapIcon, BookOpen } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import type { LevelType } from '../data/lessons';
 
-export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS' | 'SEARCH' | 'SUDOKU';
+export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS' | 'SEARCH' | 'SUDOKU' | 'MOEYS';
 
 interface ModuleSelectorProps {
   userName: string;
@@ -22,6 +22,15 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
   const iconSize = 'clamp(24px, 5vh, 40px)';
 
   const modules = [
+    {
+      id: 'MOEYS' as ModuleType,
+      title: t('modules.MOEYS') || 'MoEYS Path',
+      desc: t('moduleDesc.MOEYS') || 'The official Grade 1 Khmer curriculum!',
+      icon: <BookOpen size={iconSize} />,
+      color: '#1d4ed8',
+      bg: '#eff6ff',
+      accent: '#dbeafe'
+    },
     {
       id: 'WORD' as ModuleType,
       title: t('modules.WORD'),
@@ -85,7 +94,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
     { id: 4, icon: <ZapIcon size={iconSize} />, color: '#6366f1', bg: '#eef2ff' },
   ];
 
-  const visibleLevels = tempModule === 'SUDOKU' ? levels : levels.filter(l => l.id !== 4);
+  const visibleLevels = (tempModule === 'SUDOKU' || tempModule === 'MOEYS') ? levels : levels.filter(l => l.id !== 4);
 
   const handleModuleSelect = (modId: ModuleType) => {
     haptic.success();
