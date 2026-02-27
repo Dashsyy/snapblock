@@ -8,12 +8,14 @@
   "levels": {
     "1": "Level 1",
     "2": "Level 2",
-    "3": "Level 3"
+    "3": "Level 3",
+    "4": "Grand Master"
   },
   "levelDesc": {
     "1": "Rookie: Fun & Easy!",
     "2": "Expert: Take the challenge!",
-    "3": "Master: For the pros!"
+    "3": "Master: For the pros!",
+    "4": "Grand Master: Real 9x9 Sudoku!"
   },
   "startLearning": "START LEARNING",
   "whatsYourName": "WHAT'S YOUR NAME?",
@@ -45,20 +47,23 @@
     "MATH": "Math Fun",
     "VISUAL": "See & Spell",
     "ELECTRONICS": "Electronics",
-    "SEARCH": "Word Search"
+    "SEARCH": "Word Search",
+    "SUDOKU": "Logic Sudoku"
   },
   "moduleDesc": {
     "WORD": "Master new words with fun blocks!",
     "MATH": "Count, add, and play with numbers!",
     "VISUAL": "Look at the picture and spell!",
     "ELECTRONICS": "Learn circuits, ESP32, and hardware!",
-    "SEARCH": "Find all the hidden words!"
+    "SEARCH": "Find all the hidden words!",
+    "SUDOKU": "Challenge your brain with number logic!"
   },
   "heroMessages": [
     "Ready to become a spelling hero?",
     "Ready to master your math skills?",
     "Ready for some visual puzzles?",
     "Ready to find hidden words?",
+    "Ready for logic Sudoku?",
     "Ready to snap those blocks?",
     "Ready to build cool circuits?"
   ]

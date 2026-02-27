@@ -12,9 +12,9 @@ export interface Lesson {
   icon?: React.ReactNode;
 }
 
-export type LevelType = 1 | 2 | 3;
+export type LevelType = 1 | 2 | 3 | 4;
 
-export const WORD_MODULE: Record<LevelType, Lesson[]> = {
+export const WORD_MODULE: Record<Exclude<LevelType, 4>, Lesson[]> = {
   1: [
     { id: 'w1-1', target: 'CAT' },
     { id: 'w1-2', target: 'DOG' },
@@ -68,7 +68,7 @@ export const WORD_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
-export const MATH_MODULE: Record<LevelType, Lesson[]> = {
+export const MATH_MODULE: Record<Exclude<LevelType, 4>, Lesson[]> = {
   1: [
     { id: 'm1-1', target: '5', displayHint: '2 + 3 = ?' },
     { id: 'm1-2', target: '9', displayHint: '5 + 4 = ?' },
@@ -107,7 +107,7 @@ export const MATH_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
-export const VISUAL_MODULE: Record<LevelType, Lesson[]> = {
+export const VISUAL_MODULE: Record<Exclude<LevelType, 4>, Lesson[]> = {
   1: [
     { id: 'v1-1', target: 'DOG', icon: <Dog size={60} /> },
     { id: 'v1-2', target: 'BIRD', icon: <Bird size={60} /> },
@@ -147,7 +147,7 @@ export const VISUAL_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
-export const ELECTRONICS_MODULE: Record<LevelType, Lesson[]> = {
+export const ELECTRONICS_MODULE: Record<Exclude<LevelType, 4>, Lesson[]> = {
   1: [
     { id: 'e1-1', target: 'LED', icon: <Lightbulb size={60} /> },
     { id: 'e1-2', target: 'WIRE', icon: <Activity size={60} /> },
@@ -186,7 +186,7 @@ export const ELECTRONICS_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
-export const SEARCH_MODULE: Record<LevelType, Lesson[]> = {
+export const SEARCH_MODULE: Record<Exclude<LevelType, 4>, Lesson[]> = {
   1: [
     { id: 's1-1', target: 'RED,BLUE,PINK', displayHint: 'COLORS' },
     { id: 's1-2', target: 'CAT,DOG,FISH', displayHint: 'PETS' },
@@ -201,6 +201,23 @@ export const SEARCH_MODULE: Record<LevelType, Lesson[]> = {
     { id: 's3-1', target: 'MARS,VENUS,EARTH,SATURN,PLUTO', displayHint: 'PLANETS' },
     { id: 's3-2', target: 'CAR,BIKE,SHIP,PLANE,TRAIN', displayHint: 'TRANSPORT' },
     { id: 's3-3', target: 'SPRING,SUMMER,WINTER,AUTUMN', displayHint: 'SEASONS' },
+  ],
+};
+
+export const SUDOKU_MODULE: Record<LevelType, Lesson[]> = {
+  1: [
+    { id: 'sd1-1', target: '1000,0200,0030,0004', displayHint: '4,2,2' }, // 4x4, subgrid 2x2
+    { id: 'sd1-2', target: '0020,1000,0004,0300', displayHint: '4,2,2' },
+  ],
+  2: [
+    { id: 'sd2-1', target: '0300,4000,0001,0020', displayHint: '4,2,2' },
+    { id: 'sd2-2', target: '1004,0000,0000,2003', displayHint: '4,2,2' },
+  ],
+  3: [
+    { id: 'sd3-1', target: '100000,020000,003000,000400,000050,000006', displayHint: '6,2,3' }, // 6x6, subgrid 2x3
+  ],
+  4: [
+    { id: 'sd4-1', target: '530070000,600195000,098000060,800060003,400803001,700020006,060000280,000419005,000080079', displayHint: '9,3,3' }, // 9x9, subgrid 3x3
   ],
 };
 

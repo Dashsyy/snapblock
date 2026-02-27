@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2, Search } from 'lucide-react';
+import { Type, Calculator, Image as ImageIcon, ArrowRight, ArrowLeft, Trophy, Star, ShieldCheck, Cpu, CheckCircle2, Search, Grid3X3, Zap as ZapIcon } from 'lucide-react';
 import { SPRING_BOUNCY } from '../constants/animations';
 import { haptic } from '../utils/haptics';
 import { audio } from '../utils/audio';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import type { LevelType } from '../data/lessons';
 
-export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS' | 'SEARCH';
+export type ModuleType = 'WORD' | 'MATH' | 'VISUAL' | 'ELECTRONICS' | 'SEARCH' | 'SUDOKU';
 
 interface ModuleSelectorProps {
   userName: string;
@@ -30,6 +30,15 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
       color: '#3b82f6',
       bg: '#eff6ff',
       accent: '#dbeafe'
+    },
+    {
+      id: 'SUDOKU' as ModuleType,
+      title: t('modules.SUDOKU') || 'Sudoku',
+      desc: t('moduleDesc.SUDOKU') || 'Challenge your brain with numbers!',
+      icon: <Grid3X3 size={iconSize} />,
+      color: '#6366f1',
+      bg: '#eef2ff',
+      accent: '#e0e7ff'
     },
     {
       id: 'SEARCH' as ModuleType,
@@ -73,7 +82,10 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
     { id: 1, icon: <Star size={iconSize} />, color: '#3b82f6', bg: '#eff6ff' },
     { id: 2, icon: <Trophy size={iconSize} />, color: '#10b981', bg: '#f0fdf4' },
     { id: 3, icon: <ShieldCheck size={iconSize} />, color: '#f59e0b', bg: '#fffbeb' },
+    { id: 4, icon: <ZapIcon size={iconSize} />, color: '#6366f1', bg: '#eef2ff' },
   ];
+
+  const visibleLevels = tempModule === 'SUDOKU' ? levels : levels.filter(l => l.id !== 4);
 
   const handleModuleSelect = (modId: ModuleType) => {
     haptic.success();
@@ -329,7 +341,7 @@ export const ModuleSelector: React.FC<ModuleSelectorProps> = ({ userName, comple
                 maxWidth: '500px'
               }}
             >
-              {levels.map((level, i) => {
+              {visibleLevels.map((level, i) => {
                 const isCompleted = completedModules.includes(`${tempModule}-${level.id}`);
                 return (
                   <motion.div

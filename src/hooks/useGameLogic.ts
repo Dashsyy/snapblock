@@ -118,14 +118,15 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   useEffect(() => {
     if (userName && selectedModule && selectedLevel) {
       let allLessons: Lesson[] = [];
+      const levelKey = selectedLevel as Exclude<LevelType, 4>;
       if (selectedModule === 'MATH') {
-        allLessons = MATH_MODULE[selectedLevel];
+        allLessons = MATH_MODULE[levelKey];
       } else if (selectedModule === 'VISUAL') {
-        allLessons = VISUAL_MODULE[selectedLevel];
+        allLessons = VISUAL_MODULE[levelKey];
       } else if (selectedModule === 'ELECTRONICS') {
-        allLessons = ELECTRONICS_MODULE[selectedLevel];
+        allLessons = ELECTRONICS_MODULE[levelKey];
       } else {
-        allLessons = WORD_MODULE[selectedLevel];
+        allLessons = WORD_MODULE[levelKey];
       }
       
       const shuffled = shuffle(allLessons);
@@ -321,14 +322,15 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
   const resetGame = useCallback(() => {
     if (selectedModule && selectedLevel) {
       let allLessons: Lesson[] = [];
+      const levelKey = selectedLevel as Exclude<LevelType, 4>;
       if (selectedModule === 'MATH') {
-        allLessons = MATH_MODULE[selectedLevel];
+        allLessons = MATH_MODULE[levelKey];
       } else if (selectedModule === 'VISUAL') {
-        allLessons = VISUAL_MODULE[selectedLevel];
+        allLessons = VISUAL_MODULE[levelKey];
       } else if (selectedModule === 'ELECTRONICS') {
-        allLessons = ELECTRONICS_MODULE[selectedLevel];
+        allLessons = ELECTRONICS_MODULE[levelKey];
       } else {
-        allLessons = WORD_MODULE[selectedLevel];
+        allLessons = WORD_MODULE[levelKey];
       }
       const shuffled = shuffle(allLessons);
       setModuleLessons(shuffled.slice(0, 5));

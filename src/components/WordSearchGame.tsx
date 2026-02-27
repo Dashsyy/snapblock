@@ -113,7 +113,8 @@ export const WordSearchGame: React.FC<WordSearchGameProps> = ({
   }, [gridSize]);
 
   useEffect(() => {
-    const moduleLessons = SEARCH_MODULE[selectedLevel];
+    const levelKey = selectedLevel as Exclude<LevelType, 4>;
+    const moduleLessons = SEARCH_MODULE[levelKey];
     setLessons(moduleLessons);
     if (moduleLessons.length > 0) {
       generateGrid(moduleLessons[0]);

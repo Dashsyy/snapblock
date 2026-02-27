@@ -14,6 +14,7 @@ import { ResultsScreen } from './ResultsScreen';
 import type { ModuleType } from './ModuleSelector';
 import type { LevelType } from '../data/lessons';
 import { WordSearchGame } from './WordSearchGame';
+import { SudokuGame } from './SudokuGame';
 
 interface GameContainerProps {
   userName: string;
@@ -35,6 +36,17 @@ export const GameContainer: React.FC<GameContainerProps> = ({
   if (selectedModule === 'SEARCH') {
     return (
       <WordSearchGame 
+        userName={userName}
+        selectedLevel={selectedLevel as Exclude<LevelType, 4>}
+        onBack={onBack}
+        onModuleComplete={onModuleComplete}
+      />
+    );
+  }
+
+  if (selectedModule === 'SUDOKU') {
+    return (
+      <SudokuGame 
         userName={userName}
         selectedLevel={selectedLevel}
         onBack={onBack}
