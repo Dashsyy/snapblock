@@ -221,21 +221,31 @@ export const SUDOKU_MODULE: Record<LevelType, Lesson[]> = {
   ],
 };
 
-export const MOEYS_MODULE: Record<LevelType, Lesson[]> = {
-  1: [
-    { id: 'moeys-1', target: 'ក', displayHint: 'Lesson 1: Consonant ក' },
-    { id: 'moeys-2', target: 'ខ', displayHint: 'Lesson 2: Consonant ខ' },
-    { id: 'moeys-3', target: 'កា', displayHint: 'Lesson 3: ក + ា' },
-    { id: 'moeys-4', target: 'ខា', displayHint: 'Lesson 4: ខ + ា' },
-    { id: 'moeys-5', target: 'គ', displayHint: 'Lesson 5: Consonant គ' },
-    { id: 'moeys-6', target: 'ឃ', displayHint: 'Lesson 6: Consonant ឃ' },
-    { id: 'moeys-7', target: 'គា', displayHint: 'Lesson 7: គ + ា' },
-    { id: 'moeys-8', target: 'ឃា', displayHint: 'Lesson 8: ឃ + ា' },
-    { id: 'moeys-9', target: 'ង', displayHint: 'Lesson 9: Consonant ង' },
-    { id: 'moeys-10', target: 'ងា', displayHint: 'Lesson 10: ង + ា' },
-  ],
-  2: [], // To be populated
-  3: [], // To be populated
-  4: [], // To be populated
+const MOEYS_SYLLABUS = [
+  "ក", "ខ", "គ", "ឃ", "ង", "ច", "ឆ", "ជ", "ឈ", "ញ",
+  "ដ", "ឋ", "ឌ", "ឍ", "ណ", "ត", "ថ", "ទ", "ធ", "ន",
+  "ប", "ផ", "ព", "ភ", "ម", "យ", "រ", "ល", "វ", "ស",
+  "ហ", "ឡ", "អ", 
+  "កា", "ខា", "គា", "ឃា", "ងា", "ចា", "ឆា", "ជា", "ឈា", "ញា",
+  "ដា", "ឋា", "ឌា", "ឍា", "ណា", "តា", "ថា", "ទា", "ធា", "នា",
+  "បា", "ផា", "ពា", "ភា", "មា", "យា", "រា", "លា", "វា", "សា",
+  "ហា", "ឡា", "អា"
+];
+
+const generateMoeys = (): Record<LevelType, Lesson[]> => {
+  const result: Record<LevelType, Lesson[]> = { 1: [], 2: [], 3: [], 4: [] };
+  MOEYS_SYLLABUS.forEach((target, index) => {
+    const lessonNum = index + 1;
+    // Distribute into 4 levels (approx 16 lessons per level for 60+ items)
+    const level = Math.min(4, Math.ceil(lessonNum / 16)) as LevelType;
+    result[level].push({
+      id: `moeys-${lessonNum}`,
+      target,
+      displayHint: `Lesson ${lessonNum}`
+    });
+  });
+  return result;
 };
+
+export const MOEYS_MODULE = generateMoeys();
 

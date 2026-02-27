@@ -131,8 +131,12 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
         allLessons = WORD_MODULE[levelKey];
       }
       
-      const shuffled = shuffle(allLessons);
-      setModuleLessons(shuffled.slice(0, 5));
+      if (selectedModule === 'MOEYS') {
+        setModuleLessons(allLessons);
+      } else {
+        const shuffled = shuffle(allLessons);
+        setModuleLessons(shuffled.slice(0, 5));
+      }
       setCurrentLessonIdx(0);
       setIsModuleFinished(false);
       setScore(0);
@@ -336,8 +340,13 @@ export const useGameLogic = (userName: string | null, selectedModule: ModuleType
       } else {
         allLessons = WORD_MODULE[levelKey];
       }
-      const shuffled = shuffle(allLessons);
-      setModuleLessons(shuffled.slice(0, 5));
+      
+      if (selectedModule === 'MOEYS') {
+        setModuleLessons(allLessons);
+      } else {
+        const shuffled = shuffle(allLessons);
+        setModuleLessons(shuffled.slice(0, 5));
+      }
     }
     setCurrentLessonIdx(0);
     setIsModuleFinished(false);
